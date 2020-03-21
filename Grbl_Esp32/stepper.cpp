@@ -441,7 +441,7 @@ void IRAM_ATTR onStepperDriverTimer(void *para)  // ISR It is time to take a ste
 		}
 		set_stepper_pins_on(0); // turn all off
 	#endif
-	Serial.println("Stepper timer going");
+
 	TIMERG0.hw_timer[STEP_TIMER_INDEX].config.alarm_en = TIMER_ALARM_EN;
 
 	busy = false;
