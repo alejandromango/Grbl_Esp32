@@ -241,7 +241,7 @@ void IRAM_ATTR onStepperDriverTimer(void *para)  // ISR It is time to take a ste
 	if (busy) {
 		return;    // The busy-flag is used to avoid reentering this interrupt
 	}
-#ifndef PIDCONTROL
+#ifndef USE_PIDCONTROL
 	set_direction_pins_on(st.dir_outbits);
 
 	#ifdef USE_RMT_STEPS
@@ -672,7 +672,7 @@ void st_wake_up() {
 	// Enable Stepper Driver Interrupt
 	Stepper_Timer_Start();
 
-#ifdef PIDCONTROL
+#ifdef USE_PIDCONTROL
 	PID_Timer_Start();
 #endif
 }
@@ -864,7 +864,7 @@ void st_go_idle()
 {
 	// Disable Stepper Driver Interrupt. Allow Stepper Port Reset Interrupt to finish, if active.
 	Stepper_Timer_Stop();
-#ifdef PIDCONTROL
+#ifdef USE_PIDCONTROL
 	PID_Timer_Stop();
 #endif
 	busy = false;

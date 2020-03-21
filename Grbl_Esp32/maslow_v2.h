@@ -54,7 +54,7 @@ example to change the number of axes
 
 #define CPU_MAP_NAME 		"CPU_MAP_MASLOW_V2"
 
-#define LIMIT_MASK      	B111 // you need this with as many switches you are using
+#define LIMIT_MASK      0 // you need this with as many switches you are using
 
 // ============== Enable custom features =======================
 
@@ -82,7 +82,7 @@ example to change the number of axes
 #ifndef maslow_v2_h
 #define maslow_v2_h
 
-#define PIDCONTROL
+#define USE_PIDCONTROL
 
 // Includes from template
 #include "grbl.h"
@@ -97,6 +97,8 @@ example to change the number of axes
 	#undef N_AXIS
 #endif
 #define N_AXIS 5
+
+#define USE_PIDCONTROL
 
 #define NUM_TLC59711 1
 #define TLC_CLOCK   5

@@ -1,12 +1,10 @@
 
 #include grbl.h
 
-#define PIDCONTROL
-
-#ifdef PIDCONTROL
+#ifdef USE_PIDCONTROL
 #include "grbl_dcpid.h"
 void IRAM_ATTR onPIDDriverTimer(void *para){
-    mill->updatePID();
+    compute_pid();
 }
 
 
@@ -14,7 +12,7 @@ void update_motors_pid(uint8_t step_mask, uint8_t dir_mask){
     dc_motor_step(step_mask, dir_mask);
 }
 
-void pid_init(machine *device){
+void pid_init(){
     timer_init(PID_TIMER_GROUP, PID_TIMER_INDEX, &config);
     timer_set_counter_value(PID_TIMER_GROUP, PID_TIMER_INDEX, 0x00000000ULL);
     timer_enable_intr(PID_TIMER_GROUP, PID_TIMER_INDEX);
