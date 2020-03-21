@@ -6,8 +6,8 @@
 void IRAM_ATTR onPIDDriverTimer(void *para){
 
 	TIMERG0.int_clr_timers.t1 = 1;
-    // compute_pid();
-    Serial.println("PID triggered");
+    compute_pid();
+    // Serial.println("PID triggered");
 
 	TIMERG0.hw_timer[PID_TIMER_INDEX].config.alarm_en = TIMER_ALARM_EN;
 }
@@ -30,7 +30,7 @@ void pid_init(){
     timer_set_counter_value(PID_TIMER_GROUP, PID_TIMER_INDEX, 0x00000000ULL);
     timer_enable_intr(PID_TIMER_GROUP, PID_TIMER_INDEX);
     timer_isr_register(PID_TIMER_GROUP, PID_TIMER_INDEX, onPIDDriverTimer, NULL, 0, NULL);
-    uint32_t PID_cycles = TICKS_PER_MICROSECOND * 1000000; // Run PID cycle every 10 ms
+    uint32_t PID_cycles = TICKS_PER_MICROSECOND * 10000; // Run PID cycle every 10 ms
     PID_Timer_WritePeriod(PID_cycles);
 }
 
