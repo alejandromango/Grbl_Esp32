@@ -54,11 +54,7 @@ void setup() {
   settings_init(); // Load Grbl settings from EEPROM
 
   #ifdef USE_PIDCONTROL
-    #ifdef MASLOW_V2
-      machine device = Maslow_v2();
-    #endif
-
-    pid_init(*device);
+    pid_init();
   #endif
 
   stepper_init();  // Configure stepper pins and interrupt timers

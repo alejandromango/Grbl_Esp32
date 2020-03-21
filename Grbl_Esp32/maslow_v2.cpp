@@ -62,7 +62,7 @@ void update_pid_tunes(float new_p, float new_i, float new_d){
     motor5->setPIDTune(new_p, new_i, new_d);
 }
 
-void update_control_mode(mode new_mode){
+void update_control_mode(pid_mode new_mode){
     motor1->setControlMode(new_mode);
     motor2->setControlMode(new_mode);
     motor3->setControlMode(new_mode);

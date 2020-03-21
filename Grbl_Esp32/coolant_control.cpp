@@ -3,7 +3,7 @@
   Part of Grbl
 
   Copyright (c) 2012-2016 Sungeun K. Jeon for Gnea Research LLC
-	
+
 	2018 -	Bart Dring This file was modifed for use on the ESP32
 					CPU. Do not use this with Grbl for atMega328P
 
@@ -29,8 +29,8 @@ void coolant_init()
 	#ifdef COOLANT_FLOOD_PIN
 		pinMode(COOLANT_FLOOD_PIN, OUTPUT);
 	#endif
-	
-	
+
+
 	#ifdef COOLANT_MIST_PIN
 		pinMode(COOLANT_MIST_PIN, OUTPUT);
 	#endif
@@ -50,10 +50,10 @@ uint8_t coolant_get_state()
 			if (digitalRead(COOLANT_FLOOD_PIN)) {
 		#endif
 			cl_state |= COOLANT_STATE_FLOOD;
-		}		
+		}
 	#endif
-	
-	
+
+
   #ifdef COOLANT_MIST_PIN
     #ifdef INVERT_COOLANT_MIST_PIN
       if (! digitalRead(COOLANT_MIST_PIN)) {
@@ -75,12 +75,12 @@ void coolant_stop()
 {
 	#ifdef COOLANT_FLOOD_PIN
 		#ifdef INVERT_COOLANT_FLOOD_PIN
-			digitalWrite(COOLANT_FLOOD_PIN, 1);    
+			digitalWrite(COOLANT_FLOOD_PIN, 1);
 		#else
 			digitalWrite(COOLANT_FLOOD_PIN, 0);
 		#endif
 	#endif
-	
+
   #ifdef COOLANT_MIST_PIN
     #ifdef INVERT_COOLANT_MIST_PIN
       digitalWrite(COOLANT_MIST_PIN, 1);
@@ -91,21 +91,21 @@ void coolant_stop()
 }
 
 
-// Main program only. Immediately sets flood coolant running state and also mist coolant, 
+// Main program only. Immediately sets flood coolant running state and also mist coolant,
 // if enabled. Also sets a flag to report an update to a coolant state.
 // Called by coolant toggle override, parking restore, parking retract, sleep mode, g-code
 // parser program end, and g-code parser coolant_sync().
 void coolant_set_state(uint8_t mode)
 {
-  if (sys.abort) { return; } // Block during abort.  
-  
+  if (sys.abort) { return; } // Block during abort.
+
   if (mode == COOLANT_DISABLE) {
-  
-    coolant_stop(); 
-  
+
+    coolant_stop();
+
   } else {
-		
-		#ifdef COOLANT_FLOOD_PIN 
+
+		#ifdef COOLANT_FLOOD_PIN
     if (mode & COOLANT_FLOOD_ENABLE) {
       #ifdef INVERT_COOLANT_FLOOD_PIN
         digitalWrite(COOLANT_FLOOD_PIN, 0);
@@ -114,7 +114,7 @@ void coolant_set_state(uint8_t mode)
       #endif
     }
 		#endif
-  
+
     #ifdef COOLANT_MIST_PIN
       if (mode & COOLANT_MIST_ENABLE) {
         #ifdef INVERT_COOLANT_MIST_PIN
@@ -124,13 +124,13 @@ void coolant_set_state(uint8_t mode)
         #endif
       }
     #endif
-  
+
   }
   sys.report_ovr_counter = 0; // Set to report change immediately
 }
 
 
-// G-code parser entry-point for setting coolant state. Forces a planner buffer sync and bails 
+// G-code parser entry-point for setting coolant state. Forces a planner buffer sync and bails
 // if an abort or check-mode is active.
 void coolant_sync(uint8_t mode)
 {

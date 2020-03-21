@@ -89,7 +89,7 @@ float MotorUnit::getInput(){
  *  @brief  Set the active control mode
  *  @param newMode The enum member of the desired mode
  */
-void MotorUnit::setControlMode(mode newMode){
+void MotorUnit::setControlMode(pid_mode newMode){
     controlMode = newMode;
     updatePIDTune();
     stop();
@@ -99,7 +99,7 @@ void MotorUnit::setControlMode(mode newMode){
  *  @brief  Retrive the active control mode
  *  @return The enum member of the current mode
  */
-mode MotorUnit::getControlMode(){
+pid_mode MotorUnit::getControlMode(){
     return controlMode;
 }
 
