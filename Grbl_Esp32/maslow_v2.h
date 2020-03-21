@@ -83,12 +83,14 @@ example to change the number of axes
 #define maslow_v2_h
 
 #define USE_PIDCONTROL
+#define USE_MACHINE_INIT
 
 // Includes from template
-#include "grbl.h"
+// #include "grbl.h"
 
 // Custom includes and defines
-
+// #include "planner.h" // Need this for plan_data_t struct?
+#include "memory"
 #include "TLC59711.h"
 #include "MotorUnit.h"
 #include "driver/adc.h"
@@ -141,14 +143,14 @@ example to change the number of axes
 
 // ================ Function Prototypes from template ================
 void machine_init();
-bool user_defined_homing();
-void inverse_kinematics(float *target, plan_line_data_t *pl_data, float *position);
-void forward_kinematics(float *position);
-void kinematics_post_homing();
-void user_tool_change(uint8_t new_tool);
-void user_defined_macro(uint8_t index);
-void user_m30();
-void machine_trinamic_setup();
+// bool user_defined_homing();
+// void inverse_kinematics(float *target, plan_line_data_t *pl_data, float *position);
+// void forward_kinematics(float *position);
+// void kinematics_post_homing();
+// void user_tool_change(uint8_t new_tool);
+// void user_defined_macro(uint8_t index);
+// void user_m30();
+// void machine_trinamic_setup();
 
 // ================ Custom function Prototypes ======================
 void compute_pid();
