@@ -4,7 +4,7 @@
 
   Copyright (c) 2011-2016 Sungeun K. Jeon for Gnea Research LLC
   Copyright (c) 2009-2011 Simen Svale Skogsrud
-	
+
 	2018 -	Bart Dring This file was modifed for use on the ESP32
 					CPU. Do not use this with Grbl for atMega328P
 
@@ -45,8 +45,8 @@ static void protocol_exec_rt_suspend();
 */
 void protocol_main_loop()
 {
-	//uint8_t client = CLIENT_SERIAL; // default client	
-	
+	//uint8_t client = CLIENT_SERIAL; // default client
+
   // Perform some machine checks to make sure everything is good to go.
   #ifdef CHECK_LIMITS_AT_INIT
     if (bit_istrue(settings.flags, BITFLAG_HARD_LIMIT_ENABLE)) {
@@ -82,10 +82,10 @@ void protocol_main_loop()
   uint8_t char_counter = 0;
   uint8_t comment_char_counter = 0;
   uint8_t c;
-	
+
   for (;;) {
-		
-		
+
+
 
 		#ifdef ENABLE_SD_CARD
 			if (SD_ready_next) {
@@ -98,15 +98,15 @@ void protocol_main_loop()
 					char temp[50];
 					sd_get_current_filename(temp);
 					grbl_notifyf("SD print done", "%s print is successful", temp);
-					closeFile(); // close file and clear SD ready/running flags					
+					closeFile(); // close file and clear SD ready/running flags
 				}
 			}
 		#endif
-	
-	
+
+
     // Process one line of incoming serial data, as the data becomes available. Performs an
     // initial filtering by removing spaces and comments and capitalizing all letters.
-		
+
 		uint8_t client = CLIENT_SERIAL;
 		for (client = 0; client < CLIENT_COUNT; client++)
 		{
@@ -161,10 +161,10 @@ void protocol_main_loop()
 						// Throw away all (except EOL) comment characters and overflow characters.
 						if (c == ')') {
 							// End of '()' comment. Resume line allowed.
-							if (line_flags & LINE_FLAG_COMMENT_PARENTHESES) { 
-								line_flags &= ~(LINE_FLAG_COMMENT_PARENTHESES); 
-								comment[comment_char_counter] = 0; // null terminate								
-								report_gcode_comment(comment);								
+							if (line_flags & LINE_FLAG_COMMENT_PARENTHESES) {
+								line_flags &= ~(LINE_FLAG_COMMENT_PARENTHESES);
+								comment[comment_char_counter] = 0; // null terminate
+								report_gcode_comment(comment);
 							}
 						}
 						if (line_flags & LINE_FLAG_COMMENT_PARENTHESES) {  // capture all characters into a comment buffer
@@ -173,12 +173,12 @@ void protocol_main_loop()
 					} else {
 						if (c <= ' ') {
 							// Throw away whitepace and control characters
-						} 
+						}
 						/*
 						else if (c == '/') {
 							// Block delete NOT SUPPORTED. Ignore character.
 							// NOTE: If supported, would simply need to check the system if block delete is enabled.
-						} 
+						}
 						*/
 						else if (c == '(') {
 							// Enable comments flag and ignore all characters until ')' or EOL.
@@ -195,7 +195,7 @@ void protocol_main_loop()
 							// prevents spaces being striped and converting to uppercase
 							line_flags |= LINE_FLAG_BRACKET;
 							line[char_counter++] = c; // capture this character
-							
+
 						// TODO: Install '%' feature
 						} else if (c == '%') {
 							// Program start-end percent sign NOT SUPPORTED.
@@ -216,8 +216,8 @@ void protocol_main_loop()
 				}
 			} // while serial read
 		} // for clients
-		
-		
+
+
 
     // If there are no more characters in the serial read buffer to be processed and executed,
     // this indicates that g-code streaming has either filled the planner buffer or has
@@ -226,7 +226,7 @@ void protocol_main_loop()
 
     protocol_execute_realtime();  // Runtime command check point.
     if (sys.abort) { return; } // Bail to main() program loop to reset system.
-		
+
 		// check to see if we should disable the stepper drivers ... esp32 work around for disable in main loop.
 		if (stepper_idle)
 		{
@@ -335,14 +335,14 @@ void protocol_exec_rt_system()
 
       // State check for allowable states for hold methods.
       if (!(sys.state & (STATE_ALARM | STATE_CHECK_MODE))) {
-      
+
         // If in CYCLE or JOG states, immediately initiate a motion HOLD.
         if (sys.state & (STATE_CYCLE | STATE_JOG)) {
           if (!(sys.suspend & (SUSPEND_MOTION_CANCEL | SUSPEND_JOG_CANCEL))) { // Block, if already holding.
             st_update_plan_block_parameters(); // Notify stepper module to recompute for hold deceleration.
             sys.step_control = STEP_CONTROL_EXECUTE_HOLD; // Initiate suspend state with active flag.
             if (sys.state == STATE_JOG) { // Jog cancelled upon any hold event, except for sleeping.
-              if (!(rt_exec & EXEC_SLEEP)) { sys.suspend |= SUSPEND_JOG_CANCEL; } 
+              if (!(rt_exec & EXEC_SLEEP)) { sys.suspend |= SUSPEND_JOG_CANCEL; }
             }
           }
         }
@@ -393,12 +393,12 @@ void protocol_exec_rt_system()
           // are executed if the door switch closes and the state returns to HOLD.
           sys.suspend |= SUSPEND_SAFETY_DOOR_AJAR;
         }
-        
+
       }
 
       if (rt_exec & EXEC_SLEEP) {
         if (sys.state == STATE_ALARM) { sys.suspend |= (SUSPEND_RETRACT_COMPLETE|SUSPEND_HOLD_COMPLETE); }
-        sys.state = STATE_SLEEP; 
+        sys.state = STATE_SLEEP;
       }
 
       system_clear_exec_state_flag((EXEC_MOTION_CANCEL | EXEC_FEED_HOLD | EXEC_SAFETY_DOOR | EXEC_SLEEP));
@@ -542,27 +542,27 @@ void protocol_exec_rt_system()
       if ((sys.state == STATE_IDLE) || (sys.state & (STATE_CYCLE | STATE_HOLD))) {
         uint8_t coolant_state = gc_state.modal.coolant;
         #ifdef COOLANT_FLOOD_PIN
-					if (rt_exec & EXEC_COOLANT_FLOOD_OVR_TOGGLE) 
+					if (rt_exec & EXEC_COOLANT_FLOOD_OVR_TOGGLE)
 					{
-            if (coolant_state & COOLANT_FLOOD_ENABLE) { 
-							bit_false(coolant_state,COOLANT_FLOOD_ENABLE); 
+            if (coolant_state & COOLANT_FLOOD_ENABLE) {
+							bit_false(coolant_state,COOLANT_FLOOD_ENABLE);
 						}
-            else { 
+            else {
 							coolant_state |= COOLANT_FLOOD_ENABLE;
 						}
           }
 				#endif
 				#ifdef COOLANT_MIST_PIN
 					if (rt_exec & EXEC_COOLANT_MIST_OVR_TOGGLE) {
-            if (coolant_state & COOLANT_MIST_ENABLE) { 
-							bit_false(coolant_state,COOLANT_MIST_ENABLE); 
+            if (coolant_state & COOLANT_MIST_ENABLE) {
+							bit_false(coolant_state,COOLANT_MIST_ENABLE);
 						}
-            else { 
-							coolant_state |= COOLANT_MIST_ENABLE; 
+            else {
+							coolant_state |= COOLANT_MIST_ENABLE;
 						}
           }
 				#endif
-        
+
         coolant_set_state(coolant_state); // Report counter set in coolant_set_state().
         gc_state.modal.coolant = coolant_state;
       }
@@ -617,7 +617,7 @@ static void protocol_exec_rt_suspend()
       restore_spindle_speed = block->spindle_speed;
     }
     #ifdef DISABLE_LASER_DURING_HOLD
-      if (bit_istrue(settings.flags,BITFLAG_LASER_MODE)) { 
+      if (bit_istrue(settings.flags,BITFLAG_LASER_MODE)) {
         system_set_exec_accessory_override_flag(EXEC_SPINDLE_OVR_STOP);
       }
     #endif
@@ -633,10 +633,10 @@ static void protocol_exec_rt_suspend()
     // Block until initial hold is complete and the machine has stopped motion.
     if (sys.suspend & SUSPEND_HOLD_COMPLETE) {
 
-      // Parking manager. Handles de/re-energizing, switch state checks, and parking motions for 
+      // Parking manager. Handles de/re-energizing, switch state checks, and parking motions for
       // the safety door and sleep states.
       if (sys.state & (STATE_SAFETY_DOOR | STATE_SLEEP)) {
-      
+
         // Handles retraction motions and de-energizing.
         if (bit_isfalse(sys.suspend,SUSPEND_RETRACT_COMPLETE)) {
 
@@ -649,7 +649,7 @@ static void protocol_exec_rt_suspend()
             coolant_set_state(COOLANT_DISABLE);     // De-energize
 
           #else
-          
+
             // Get current position and store restore location and spindle retract waypoint.
             system_convert_array_steps_to_mpos(parking_target,sys_position);
             if (bit_isfalse(sys.suspend,SUSPEND_RESTART_RETRACT)) {
@@ -710,7 +710,7 @@ static void protocol_exec_rt_suspend()
 
         } else {
 
-          
+
           if (sys.state == STATE_SLEEP) {
             report_feedback_message(MESSAGE_SLEEP_MODE);
             // Spindle and coolant should already be stopped, but do it again just to be sure.
@@ -719,8 +719,8 @@ static void protocol_exec_rt_suspend()
             st_go_idle(); // Disable steppers
             while (!(sys.abort)) { protocol_exec_rt_system(); } // Do nothing until reset.
             return; // Abort received. Return to re-initialize.
-          }    
-          
+          }
+
           // Allows resuming from parking/safety door. Actively checks if safety door is closed and ready to resume.
           if (sys.state == STATE_SAFETY_DOOR) {
             if (!(system_check_safety_door_ajar())) {

@@ -2,10 +2,10 @@
   Grbl_ESP32.ino - Header for system level commands and real-time processes
   Part of Grbl
   Copyright (c) 2014-2016 Sungeun K. Jeon for Gnea Research LLC
-	
+
 	2018 -	Bart Dring This file was modified for use on the ESP32
 					CPU. Do not use this with Grbl for atMega328P
-	
+
   Grbl is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
@@ -42,38 +42,46 @@ void setup() {
   WiFi.enableSTA (false);
   WiFi.enableAP (false);
   WiFi.mode (WIFI_OFF);
-  
-  serial_init();   // Setup serial baud rate and interrupts  
-  
+
+  serial_init();   // Setup serial baud rate and interrupts
+
   grbl_msg_sendf(CLIENT_SERIAL, MSG_LEVEL_INFO, "Compiled with ESP32 SDK:%s", ESP.getSdkVersion()); // print the SDK version
 
   #ifdef CPU_MAP_NAME // show the map name at startup
 		grbl_msg_sendf(CLIENT_SERIAL, MSG_LEVEL_INFO, "Using cpu_map:%s", CPU_MAP_NAME);
   #endif
-	
-  settings_init(); // Load Grbl settings from EEPROM  
-  
+
+  settings_init(); // Load Grbl settings from EEPROM
+
+  #ifdef PIDCONTROL
+    #ifdef MASLOW_V2
+      machine device = Maslow_v2();
+    #endif
+
+    pid_init(*device);
+  #endif
+
   stepper_init();  // Configure stepper pins and interrupt timers
-  system_ini();   // Configure pinout pins and pin-change interrupt (Renamed due to conflict with esp32 files)	
-	 
+  system_ini();   // Configure pinout pins and pin-change interrupt (Renamed due to conflict with esp32 files)
+
   memset(sys_position,0,sizeof(sys_position)); // Clear machine position.
 
 	#ifdef USE_PEN_SERVO
 		servo_init();
 	#endif
-	
+
 	#ifdef USE_SERVO_AXES
 		init_servos();
 	#endif
-	
+
 	#ifdef USE_PEN_SOLENOID
 		solenoid_init();
 	#endif
-	
+
 	#ifdef USE_MACHINE_INIT
 		machine_init(); // user supplied function for special initialization
 	#endif
-  
+
   // Initialize system state.
   #ifdef FORCE_INITIALIZATION_ALARM
     // Force Grbl into an ALARM state upon a power-cycle or hard reset.
@@ -101,8 +109,8 @@ void setup() {
     inputBuffer.begin();
 }
 
-void loop() {  
-  
+void loop() {
+
   // Reset system variables.
   uint8_t prior_state = sys.state;
   memset(&sys, 0, sizeof(system_t)); // Clear system struct variable.
@@ -119,26 +127,26 @@ void loop() {
 
   // Reset Grbl primary systems.
   serial_reset_read_buffer(CLIENT_ALL); // Clear serial read buffer
-  
-  gc_init(); // Set g-code parser to default state  
-  
-  spindle_init();  
+
+  gc_init(); // Set g-code parser to default state
+
+  spindle_init();
   coolant_init();
   limits_init();
   probe_init();
-  
+
   plan_reset(); // Clear block buffer and planner variables
   st_reset(); // Clear stepper subsystem variables
   // Sync cleared gcode and planner positions to current system position.
   plan_sync_position();
   gc_sync_position();
 
-   
-  
+
+
   // put your main code here, to run repeatedly:
   report_init_message(CLIENT_ALL);
-	
-  // Start Grbl main loop. Processes program inputs and executes them.  
-  protocol_main_loop();   
-  
+
+  // Start Grbl main loop. Processes program inputs and executes them.
+  protocol_main_loop();
+
 }

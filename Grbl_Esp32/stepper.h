@@ -4,7 +4,7 @@
 
   Copyright (c) 2011-2016 Sungeun K. Jeon for Gnea Research LLC
   Copyright (c) 2009-2011 Simen Svale Skogsrud
-	
+
 	2018 -	Bart Dring This file was modifed for use on the ESP32
 					CPU. Do not use this with Grbl for atMega328P
 
@@ -70,7 +70,7 @@
 //#endif
 
 #define STEP_TIMER_GROUP TIMER_GROUP_0
-#define STEP_TIMER_INDEX TIMER_0 
+#define STEP_TIMER_INDEX TIMER_0
 
 // esp32 work around for diable in main loop
 extern uint64_t stepper_idle_counter;
@@ -86,7 +86,7 @@ void IRAM_ATTR onStepperOffTimer();
   void initRMT();
 #endif
 
-void stepper_init(); 
+void stepper_init();
 
 // Enable steppers, but cycle does not start unless called by motion control or realtime command.
 void st_wake_up();

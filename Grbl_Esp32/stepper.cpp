@@ -153,7 +153,7 @@ typedef struct {
 static st_prep_t prep;
 
 // RMT channel numbers. These are assigned dynamically as needed via the CPU MAP
-// Only 8 are available (0-7) 
+// Only 8 are available (0-7)
 // They are Initialized with an invalid number to prevent unitended consequences
 uint8_t X_rmt_chan_num = 255;
 uint8_t X2_rmt_chan_num = 255; // Ganged axes have the "2"
@@ -241,19 +241,22 @@ void IRAM_ATTR onStepperDriverTimer(void *para)  // ISR It is time to take a ste
 	if (busy) {
 		return;    // The busy-flag is used to avoid reentering this interrupt
 	}
-
+#ifndef PIDCONTROL
 	set_direction_pins_on(st.dir_outbits);
-	
+
 	#ifdef USE_RMT_STEPS
 		stepperRMT_Outputs();
 	#else
 		set_stepper_pins_on(st.step_outbits);
 		step_pulse_off_time = esp_timer_get_time() + (settings.pulse_microseconds); // determine when to turn off pulse
 	#endif
-	
+
 	#ifdef USE_UNIPOLAR
 		unipolar_step(st.step_outbits, st.dir_outbits);
 	#endif
+#else
+	dc_motor_step(st.step_outbits, st.dir_outbits);
+#endif
 
 	busy = true;
 	// If there is no step segment, attempt to pop one from the stepper buffer
@@ -264,7 +267,7 @@ void IRAM_ATTR onStepperDriverTimer(void *para)  // ISR It is time to take a ste
 			st.exec_segment = &segment_buffer[segment_buffer_tail];
 
 			// Initialize step segment timing per step and load number of steps to execute.
-			Stepper_Timer_WritePeriod(st.exec_segment->cycles_per_tick);
+			Stepper_Timer_WritePeriod(st.exec_segment->cycles_per_tick); // Remember this line
 
 			st.step_count = st.exec_segment->n_step; // NOTE: Can sometimes be zero when moving slow.
 			// If the new segment starts a new planner block, initialize stepper variables and counters.
@@ -284,7 +287,7 @@ void IRAM_ATTR onStepperDriverTimer(void *para)  // ISR It is time to take a ste
 			st.steps[X_AXIS] = st.exec_block->steps[X_AXIS] >> st.exec_segment->amass_level;
 			st.steps[Y_AXIS] = st.exec_block->steps[Y_AXIS] >> st.exec_segment->amass_level;
 			st.steps[Z_AXIS] = st.exec_block->steps[Z_AXIS] >> st.exec_segment->amass_level;
-			
+
 			 #if (N_AXIS > A_AXIS)
 			   st.steps[A_AXIS] = st.exec_block->steps[A_AXIS] >> st.exec_segment->amass_level;
 			#endif
@@ -294,10 +297,10 @@ void IRAM_ATTR onStepperDriverTimer(void *para)  // ISR It is time to take a ste
 			#if (N_AXIS > C_AXIS)
 			   st.steps[C_AXIS] = st.exec_block->steps[C_AXIS] >> st.exec_segment->amass_level;
 			#endif
-			
+
 #endif
 
-#ifdef VARIABLE_SPINDLE	
+#ifdef VARIABLE_SPINDLE
 			// Set real-time spindle output as segment is loaded, just prior to the first step.
 			spindle_set_speed(st.exec_segment->spindle_pwm);
 #endif
@@ -311,7 +314,7 @@ void IRAM_ATTR onStepperDriverTimer(void *para)  // ISR It is time to take a ste
 				if (st.exec_block->is_pwm_rate_adjusted) {
 					spindle_set_speed(spindle_pwm_off_value);
 				}
-			}		
+			}
 
 #endif
 			system_set_exec_state_flag(EXEC_CYCLE_STOP); // Flag main program for cycle end
@@ -371,7 +374,7 @@ void IRAM_ATTR onStepperDriverTimer(void *para)  // ISR It is time to take a ste
 			sys_position[Z_AXIS]++;
 		}
 	}
-	
+
 #if (N_AXIS > A_AXIS)
    #ifdef ADAPTIVE_MULTI_AXIS_STEP_SMOOTHING
      st.counter_a += st.steps[A_AXIS];
@@ -385,8 +388,8 @@ void IRAM_ATTR onStepperDriverTimer(void *para)  // ISR It is time to take a ste
      else { sys_position[A_AXIS]++; }
    }
 #endif
-  
-  
+
+
  #if (N_AXIS > B_AXIS)
    #ifdef ADAPTIVE_MULTI_AXIS_STEP_SMOOTHING
      st.counter_b += st.steps[B_AXIS];
@@ -431,13 +434,13 @@ void IRAM_ATTR onStepperDriverTimer(void *para)  // ISR It is time to take a ste
 
 	#ifndef USE_RMT_STEPS
 		st.step_outbits ^= step_port_invert_mask;  // Apply step port invert mask
-		
+
 		// wait for step pulse time to complete...some of it should have expired during code above
 		while (esp_timer_get_time() < step_pulse_off_time) {
 			NOP(); // spin here until time to turn off step
 		}
-		set_stepper_pins_on(0); // turn all off		
-	#endif	
+		set_stepper_pins_on(0); // turn all off
+	#endif
 
 	TIMERG0.hw_timer[STEP_TIMER_INDEX].config.alarm_en = TIMER_ALARM_EN;
 
@@ -447,23 +450,23 @@ void IRAM_ATTR onStepperDriverTimer(void *para)  // ISR It is time to take a ste
 
 void stepper_init()
 {
-	
+
 	// make the stepper disable pin an output
 	#ifdef STEPPERS_DISABLE_PIN
 		pinMode(STEPPERS_DISABLE_PIN, OUTPUT);
 		set_stepper_disable(true);
 	#endif
-	
+
 	#ifdef USE_UNIPOLAR
 		unipolar_init();
 	#endif
-	
-	#ifdef USE_TRINAMIC		
+
+	#ifdef USE_TRINAMIC
 		Trinamic_Init();
-	#endif	
-	
+	#endif
+
 	grbl_msg_sendf(CLIENT_SERIAL, MSG_LEVEL_INFO, "Axis count %d", N_AXIS);
-	
+
 	#ifdef USE_RMT_STEPS
 		grbl_msg_sendf(CLIENT_SERIAL, MSG_LEVEL_INFO, "RMT Steps");
 		initRMT();
@@ -490,19 +493,19 @@ void stepper_init()
 		#ifdef Z2_STEP_PIN
 			pinMode(Z2_STEP_PIN, OUTPUT);
 		#endif
-		
+
 		#ifdef A_STEP_PIN
 			pinMode(A_STEP_PIN, OUTPUT);
 		#endif
-		
+
 		#ifdef B_STEP_PIN
 			pinMode(B_STEP_PIN, OUTPUT);
 		#endif
-		
+
 		#ifdef C_STEP_PIN
 			pinMode(C_STEP_PIN, OUTPUT);
-		#endif	
-		
+		#endif
+
 	#endif
 
 	// make the direction pins outputs
@@ -546,7 +549,7 @@ void stepper_init()
 	#endif
 	#ifdef C2_DIRECTION_PIN
 		pinMode(C2_DIRECTION_PIN, OUTPUT);
-	#endif	
+	#endif
 
 // setup stepper timer interrupt
 
@@ -727,6 +730,10 @@ void st_wake_up()
 
 	// Enable Stepper Driver Interrupt
 	Stepper_Timer_Start();
+
+#ifdef PIDCONTROL
+	PID_Timer_Start();
+#endif
 }
 
 // Reset and clear stepper subsystem variables
@@ -766,42 +773,42 @@ void set_direction_pins_on(uint8_t onMask)
 #ifdef X_DIRECTION_PIN
 	digitalWrite(X_DIRECTION_PIN, (onMask & (1<<X_AXIS)));
 #endif
-#ifdef X2_DIRECTION_PIN // optional ganged axis 
-	digitalWrite(X2_DIRECTION_PIN, (onMask & (1<<X_AXIS)));	
+#ifdef X2_DIRECTION_PIN // optional ganged axis
+	digitalWrite(X2_DIRECTION_PIN, (onMask & (1<<X_AXIS)));
 #endif
 
 #ifdef Y_DIRECTION_PIN
 	digitalWrite(Y_DIRECTION_PIN, (onMask & (1<<Y_AXIS)));
 #endif
-#ifdef Y2_DIRECTION_PIN // optional ganged axis 
+#ifdef Y2_DIRECTION_PIN // optional ganged axis
 	digitalWrite(Y2_DIRECTION_PIN, (onMask & (1<<Y_AXIS)));
 #endif
 
 #ifdef Z_DIRECTION_PIN
 	digitalWrite(Z_DIRECTION_PIN, (onMask & (1<<Z_AXIS)));
 #endif
-#ifdef Z2_DIRECTION_PIN // optional ganged axis 
+#ifdef Z2_DIRECTION_PIN // optional ganged axis
 	digitalWrite(Z2_DIRECTION_PIN, (onMask & (1<<Z_AXIS)));
 #endif
 
 #ifdef A_DIRECTION_PIN
 	digitalWrite(A_DIRECTION_PIN, (onMask & (1<<A_AXIS)));
 #endif
-#ifdef A2_DIRECTION_PIN // optional ganged axis 
+#ifdef A2_DIRECTION_PIN // optional ganged axis
 	digitalWrite(A2_DIRECTION_PIN, (onMask & (1<<A_AXIS)));
 #endif
 
 #ifdef B_DIRECTION_PIN
 	digitalWrite(B_DIRECTION_PIN, (onMask & (1<<B_AXIS)));
 #endif
-#ifdef B2_DIRECTION_PIN // optional ganged axis 
+#ifdef B2_DIRECTION_PIN // optional ganged axis
 	digitalWrite(B2_DIRECTION_PIN, (onMask & (1<<B_AXIS)));
 #endif
 
 #ifdef C_DIRECTION_PIN
 	digitalWrite(C_DIRECTION_PIN, (onMask & (1<<C_AXIS)));
 #endif
-#ifdef C2_DIRECTION_PIN // optional ganged axis 
+#ifdef C2_DIRECTION_PIN // optional ganged axis
 	digitalWrite(C2_DIRECTION_PIN, (onMask & (1<<C_AXIS)));
 #endif
 
@@ -882,7 +889,7 @@ void set_direction_pins_on(uint8_t onMask)
 // Set stepper pulse output pins
 inline IRAM_ATTR static void stepperRMT_Outputs()
 {
-	
+
 #ifdef  X_STEP_PIN
 	if(st.step_outbits & (1<<X_AXIS)) {
 	#ifndef X2_STEP_PIN // if not a ganged axis
@@ -892,11 +899,11 @@ inline IRAM_ATTR static void stepperRMT_Outputs()
 			if ( (ganged_mode == SQUARING_MODE_DUAL) || (ganged_mode == SQUARING_MODE_A) ) {
 				RMT.conf_ch[X_rmt_chan_num].conf1.mem_rd_rst = 1;
 				RMT.conf_ch[X_rmt_chan_num].conf1.tx_start = 1;			}
-			
+
 			if ( (ganged_mode == SQUARING_MODE_DUAL) || (ganged_mode == SQUARING_MODE_B) ) {
 				RMT.conf_ch[X2_rmt_chan_num].conf1.mem_rd_rst = 1;
 				RMT.conf_ch[X2_rmt_chan_num].conf1.tx_start = 1;
-			}			
+			}
 	#endif
 	}
 
@@ -911,11 +918,11 @@ inline IRAM_ATTR static void stepperRMT_Outputs()
 		if ( (ganged_mode == SQUARING_MODE_DUAL) || (ganged_mode == SQUARING_MODE_A) ) {
 			RMT.conf_ch[Y_rmt_chan_num].conf1.mem_rd_rst = 1;
 			RMT.conf_ch[Y_rmt_chan_num].conf1.tx_start = 1;
-		}		
+		}
 		if ( (ganged_mode == SQUARING_MODE_DUAL) || (ganged_mode == SQUARING_MODE_B) ) {
 			RMT.conf_ch[Y2_rmt_chan_num].conf1.mem_rd_rst = 1;
 			RMT.conf_ch[Y2_rmt_chan_num].conf1.tx_start = 1;
-		}		
+		}
 #endif
 	}
 #endif
@@ -929,7 +936,7 @@ inline IRAM_ATTR static void stepperRMT_Outputs()
 
 #ifdef  A_STEP_PIN
 	if(st.step_outbits & (1<<A_AXIS)) {
-		
+
 		RMT.conf_ch[A_rmt_chan_num].conf1.mem_rd_rst = 1;
 		RMT.conf_ch[A_rmt_chan_num].conf1.tx_start = 1;
 	}
@@ -937,7 +944,7 @@ inline IRAM_ATTR static void stepperRMT_Outputs()
 
 #ifdef  B_STEP_PIN
 	if(st.step_outbits & (1<<B_AXIS)) {
-		
+
 		RMT.conf_ch[B_rmt_chan_num].conf1.mem_rd_rst = 1;
 		RMT.conf_ch[B_rmt_chan_num].conf1.tx_start = 1;
 	}
@@ -945,7 +952,7 @@ inline IRAM_ATTR static void stepperRMT_Outputs()
 
 #ifdef  C_STEP_PIN
 	if(st.step_outbits & (1<<C_AXIS)) {
-		
+
 		RMT.conf_ch[C_rmt_chan_num].conf1.mem_rd_rst = 1;
 		RMT.conf_ch[C_rmt_chan_num].conf1.tx_start = 1;
 	}
@@ -959,9 +966,12 @@ void st_go_idle()
 {
 	// Disable Stepper Driver Interrupt. Allow Stepper Port Reset Interrupt to finish, if active.
 	Stepper_Timer_Stop();
+#ifdef PIDCONTROL
+	PID_Timer_Stop();
+#endif
 	busy = false;
-	
-	
+
+
 
 	bool pin_state = false;
 	// Set stepper driver idle state, disabled or enabled, depending on settings and circumstances.
@@ -1134,6 +1144,8 @@ void st_prep_buffer()
 
 				// Initialize segment buffer data for generating the segments.
 				prep.steps_remaining = (float)pl_block->step_event_count;
+				// This is not actual steps per mm of any axis, it is maximum
+				// steps per total mm traveled
 				prep.step_per_mm = prep.steps_remaining/pl_block->millimeters;
 				prep.req_mm_increment = REQ_MM_INCREMENT_SCALAR/prep.step_per_mm;
 				prep.dt_remainder = 0.0; // Reset for new segment block
@@ -1151,7 +1163,7 @@ void st_prep_buffer()
 				// Setup laser mode variables. PWM rate adjusted motions will always complete a motion with the
 				// spindle off.
 				st_prep_block->is_pwm_rate_adjusted = false;
-				if (settings.flags & BITFLAG_LASER_MODE) {					
+				if (settings.flags & BITFLAG_LASER_MODE) {
 					if (pl_block->condition & PL_COND_FLAG_SPINDLE_CCW) {
 						// Pre-compute inverse programmed rate to speed up PWM updating per step segment.
 						prep.inv_rate = 1.0/pl_block->programmed_rate;
@@ -1388,7 +1400,7 @@ void st_prep_buffer()
 				#if ( (defined VARIABLE_SPINDLE) && (defined SPINDLE_PWM_PIN) )
 					prep.current_spindle_pwm = spindle_pwm_off_value ;
 				#endif
-				
+
 			}
 			bit_false(sys.step_control,STEP_CONTROL_UPDATE_SPINDLE_PWM);
 		}
@@ -1561,20 +1573,20 @@ void IRAM_ATTR Stepper_Timer_Stop()
 
 
 void set_stepper_disable(uint8_t isOn)  // isOn = true // to disable
-{	
-	
+{
+
 	#ifdef USE_TRINAMIC_ENABLE
 		trinamic_stepper_enable(!isOn);
 	#endif
-	
+
 	if (bit_istrue(settings.flags,BITFLAG_INVERT_ST_ENABLE)) {
 		isOn = !isOn;    // Apply pin invert.
 	}
-	
+
 	#ifdef USE_UNIPOLAR
 		unipolar_disable(isOn);
 	#endif
-	
+
 #ifdef STEPPERS_DISABLE_PIN
 	digitalWrite(STEPPERS_DISABLE_PIN, isOn );
 #endif

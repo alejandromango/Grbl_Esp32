@@ -2,10 +2,10 @@
   grbl.h - Header for system level commands and real-time processes
   Part of Grbl
   Copyright (c) 2014-2016 Sungeun K. Jeon for Gnea Research LLC
-	
+
 	2018 -	Bart Dring This file was modifed for use on the ESP32
 					CPU. Do not use this with Grbl for atMega328P
-	
+
   Grbl is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
@@ -61,11 +61,11 @@
 	#include "BTconfig.h"
 #endif
 
-#ifdef ENABLE_SD_CARD	
+#ifdef ENABLE_SD_CARD
 	#include "grbl_sd.h"
 #endif
 
-#ifdef ENABLE_WIFI	
+#ifdef ENABLE_WIFI
     #include "wificonfig.h"
     #ifdef ENABLE_HTTP
     #include "serial2socket.h"
@@ -92,3 +92,6 @@
 	#include "grbl_unipolar.h"
 #endif
 
+#ifdef PIDCONTROL
+  #include "grbl_dcpid.h"
+#endif
