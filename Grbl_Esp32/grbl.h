@@ -92,6 +92,6 @@
 	#include "grbl_unipolar.h"
 #endif
 
-#ifdef PIDCONTROL
+#ifdef USE_PIDCONTROL
   #include "grbl_dcpid.h"
 #endif

@@ -53,7 +53,7 @@ void setup() {
 
   settings_init(); // Load Grbl settings from EEPROM
 
-  #ifdef PIDCONTROL
+  #ifdef USE_PIDCONTROL
     #ifdef MASLOW_V2
       machine device = Maslow_v2();
     #endif

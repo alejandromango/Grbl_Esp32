@@ -1141,7 +1141,7 @@
 #endif
 
 #ifdef CPU_MAP_MASLOW_V2
-	#include "atari_1020.h"
+	#include "maslow_v2.h"
 #endif
 
 #ifdef CPU_MAP_CUSTOM_MACHINE
