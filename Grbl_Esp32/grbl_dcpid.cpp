@@ -5,9 +5,11 @@
 #include "grbl_dcpid.h"
 void IRAM_ATTR onPIDDriverTimer(void *para){
 
-	TIMERG0.int_clr_timers.t0 = 1;
+	TIMERG0.int_clr_timers.t1 = 1;
     // compute_pid();
     Serial.println("PID triggered");
+
+	TIMERG0.hw_timer[PID_TIMER_INDEX].config.alarm_en = TIMER_ALARM_EN;
 }
 
 
