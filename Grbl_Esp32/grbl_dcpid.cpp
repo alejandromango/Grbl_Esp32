@@ -7,7 +7,7 @@ void IRAM_ATTR onPIDDriverTimer(void *para){
 
 	TIMERG0.int_clr_timers.t0 = 1;
     // compute_pid();
-    Serial.println("PID triggered")
+    Serial.println("PID triggered");
 }
 
 
@@ -16,6 +16,14 @@ void update_motors_pid(uint8_t step_mask, uint8_t dir_mask){
 }
 
 void pid_init(){
+    timer_config_t config;
+	config.divider     = F_TIMERS / F_STEPPER_TIMER;
+	config.counter_dir = TIMER_COUNT_UP;
+	config.counter_en  = TIMER_PAUSE;
+	config.alarm_en    = TIMER_ALARM_EN;
+	config.intr_type   = TIMER_INTR_LEVEL;
+	config.auto_reload = true;
+
     timer_init(PID_TIMER_GROUP, PID_TIMER_INDEX, &config);
     timer_set_counter_value(PID_TIMER_GROUP, PID_TIMER_INDEX, 0x00000000ULL);
     timer_enable_intr(PID_TIMER_GROUP, PID_TIMER_INDEX);
