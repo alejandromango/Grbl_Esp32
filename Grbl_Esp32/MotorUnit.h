@@ -11,7 +11,7 @@
 #include "DRV8873LED.h"
 #include "AS5048A.h"
 
-enum mode {REVOLUTIONS, CURRENT, DISTANCE, SPEED, MAX = SPEED};
+enum pid_mode {REVOLUTIONS, CURRENT, DISTANCE, SPEED, MAX = SPEED};
 class MotorUnit{
 
 public:
@@ -31,8 +31,8 @@ public:
     float  getError();
     int    getOutput();
     float  getInput();
-    void   setControlMode(mode newMode);
-    mode   getControlMode();
+    void   setControlMode(pid_mode newMode);
+    pid_mode   getControlMode();
     float  getRevolutionsFromAngle(float angle);
     float  getDistanceFromAngle(float angle);
     void   setPitch(float newPitch);
@@ -100,7 +100,8 @@ private:
     float anglePrevious = 0.0;
 
     float mampsCurrent  = 0.0;
-    mode controlMode = REVOLUTIONS;
+    pid_mode controlMode = REVOLUTIONS;
+
 };
 
 #endif

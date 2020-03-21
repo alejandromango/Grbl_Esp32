@@ -17,7 +17,8 @@
   You should have received a copy of the GNU General Public License
   along with Grbl.  If not, see <http://www.gnu.org/licenses/>.
 */
-
+#ifndef grbl_h
+#define grbl_h
 // Grbl versioning system
 #define GRBL_VERSION "1.1f"
 #define GRBL_VERSION_BUILD "20200319"
@@ -115,4 +116,5 @@ void user_m30();
 void user_tool_change(uint8_t new_tool);
 #ifdef PIDCONTROL
   #include "grbl_dcpid.h"
+#endif
 #endif

@@ -88,6 +88,7 @@ example to change the number of axes
 #include "grbl.h"
 
 // Custom includes and defines
+
 #include "TLC59711.h"
 #include "MotorUnit.h"
 #include "driver/adc.h"
@@ -161,7 +162,7 @@ void update_pid_tunes(float new_p,
                         float new_i,
                         float new_d);
 
-void update_control_mode(mode new_mode);
+void update_control_mode(pid_mode new_mode);
 
 
 extern std::unique_ptr<TLC59711> tlc;
