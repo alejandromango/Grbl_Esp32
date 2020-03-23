@@ -114,11 +114,7 @@ Some features should not be changed. See notes below.
 //Connect to your local AP with these credentials
 //#define CONNECT_TO_SSID  "your SSID"
 //#define SSID_PASSWORD  "your SSID password"
-<<<<<<< HEAD
 //CONFIGURE_EYECATCH_BEGIN (DO NOT MODIFY THIS LINE)
-=======
-
->>>>>>> 272015ce8e9a7f2697026775ad9f745647f33722
 #define ENABLE_BLUETOOTH // enable bluetooth
 
 #define ENABLE_SD_CARD // enable use of SD Card to run jobs
@@ -222,33 +218,6 @@ Some features should not be changed. See notes below.
 // mainly a safety feature to remind the user to home, since position is unknown to Grbl.
 #define HOMING_INIT_LOCK // Comment to disable
 
-<<<<<<< HEAD
-=======
-// Define the homing cycle patterns with bitmasks. The homing cycle first performs a search mode
-// to quickly engage the limit switches, followed by a slower locate mode, and finished by a short
-// pull-off motion to disengage the limit switches. The following HOMING_CYCLE_x defines are executed
-// in order starting with suffix 0 and completes the homing routine for the specified-axes only. If
-// an axis is omitted from the defines, it will not home, nor will the system update its position.
-// Meaning that this allows for users with non-standard Cartesian machines, such as a lathe (x then z,
-// with no y), to configure the homing cycle behavior to their needs.
-// NOTE: The homing cycle is designed to allow sharing of limit pins, if the axes are not in the same
-// cycle, but this requires some pin settings changes in cpu_map.h file. For example, the default homing
-// cycle can share the Z limit pin with either X or Y limit pins, since they are on different cycles.
-// By sharing a pin, this frees up a precious IO pin for other purposes. In theory, all axes limit pins
-// may be reduced to one pin, if all axes are homed with separate cycles, or vice versa, all three axes
-// on separate pin, but homed in one cycle. Also, it should be noted that the function of hard limits
-// will not be affected by pin sharing.
-
-// NOTE: Defaults are set for a traditional 3-axis CNC machine. Z-axis first to clear, followed by X & Y.
-#define HOMING_CYCLE_0 (1<<Z_AXIS)	// TYPICALLY REQUIRED: First move Z to clear workspace.
-#define HOMING_CYCLE_1 (1<<X_AXIS)
-#define HOMING_CYCLE_2 (1<<Y_AXIS)
-
-// NOTE: The following is for for homingg X and Y at the same time
-// #define HOMING_CYCLE_0 (1<<Z_AXIS) // first home z by itself
-// #define HOMING_CYCLE_1 ((1<<X_AXIS)|(1<<Y_AXIS))  // Homes both X-Y in one cycle. NOT COMPATIBLE WITH COREXY!!!
-
->>>>>>> 272015ce8e9a7f2697026775ad9f745647f33722
 // Number of homing cycles performed after when the machine initially jogs to limit switches.
 // This help in preventing overshoot and should improve repeatability. This value should be one or
 // greater.
