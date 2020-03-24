@@ -37,7 +37,7 @@ Some features should not be changed. See notes below.
 
 #ifndef config_h
 #define config_h
-#include <Arduino.h>
+// #include <Arduino.h>
 
 // It is no longer necessary to edit this file to choose
 // a machine configuration; edit machine.h instead
