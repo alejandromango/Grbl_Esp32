@@ -64,8 +64,8 @@ example to change the number of axes
 #define N_AXIS 5
 
 #define NUM_TLC59711 1
-#define TLC_CLOCK   5
-#define TLC_DATA  21
+#define TLC_DATA   5
+#define TLC_CLOCK  21
 
 #define RSENSE 10000
 #define MOTOR_1_ADC ADC1_GPIO33_CHANNEL
@@ -112,6 +112,8 @@ example to change the number of axes
     #include "MotorUnit.h"
     #include "driver/adc.h"
     #include "esp_adc_cal.h"
+
+    // #error "Imported in header"
 
     void compute_pid();
     void dc_motor_step(uint8_t step_mask, uint8_t dir_mask);

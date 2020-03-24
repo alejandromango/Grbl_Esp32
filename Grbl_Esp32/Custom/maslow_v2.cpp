@@ -1,4 +1,8 @@
-#include "maslow_v2.h"
+#include "memory"
+#include "TLC59711.h"
+#include "MotorUnit.h"
+#include "driver/adc.h"
+#include "esp_adc_cal.h"
 
 std::unique_ptr<TLC59711> tlc;
 std::unique_ptr<MotorUnit> motor1;

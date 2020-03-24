@@ -17,8 +17,8 @@
   You should have received a copy of the GNU General Public License
   along with Grbl.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef grbl_h
-#define grbl_h
+// #ifndef grbl_h
+// #define grbl_h
 // Grbl versioning system
 #define GRBL_VERSION "1.1f"
 #define GRBL_VERSION_BUILD "20200319"
@@ -34,87 +34,87 @@
 
 // Define the Grbl system include files. NOTE: Do not alter organization.
 #include "config.h"
-#include "nuts_bolts.h"
-#include "tdef.h"
+// #include "nuts_bolts.h"
+// #include "tdef.h"
 
-#include "defaults.h"
-#include "settings.h"
-#include "system.h"
+// #include "defaults.h"
+// #include "settings.h"
+// #include "system.h"
 
-#include "planner.h"
-#include "coolant_control.h"
-#include "grbl_eeprom.h"
-#include "gcode.h"
-#include "grbl_limits.h"
-#include "motion_control.h"
-#include "print.h"
-#include "probe.h"
-#include "protocol.h"
-#include "report.h"
-#include "serial.h"
-#include "spindle_control.h"
-#include "stepper.h"
-#include "jog.h"
-#include "inputbuffer.h"
+// #include "planner.h"
+// #include "coolant_control.h"
+// #include "grbl_eeprom.h"
+// #include "gcode.h"
+// #include "grbl_limits.h"
+// #include "motion_control.h"
+// #include "print.h"
+// #include "probe.h"
+// #include "protocol.h"
+// #include "report.h"
+// #include "serial.h"
+// #include "spindle_control.h"
+// #include "stepper.h"
+// #include "jog.h"
+// #include "inputbuffer.h"
 
-#ifdef ENABLE_BLUETOOTH
-    #include "BTconfig.h"
-#endif
+// #ifdef ENABLE_BLUETOOTH
+//     #include "BTconfig.h"
+// #endif
 
-#ifdef ENABLE_SD_CARD
-    #include "grbl_sd.h"
-#endif
+// #ifdef ENABLE_SD_CARD
+//     #include "grbl_sd.h"
+// #endif
 
-#ifdef ENABLE_WIFI
-    #include "wificonfig.h"
-    #ifdef ENABLE_HTTP
-        #include "serial2socket.h"
-    #endif
-    #ifdef ENABLE_TELNET
-        #include "telnet_server.h"
-    #endif
-    #ifdef ENABLE_NOTIFICATIONS
-        #include "notifications_service.h"
-    #endif
-#endif
+// #ifdef ENABLE_WIFI
+//     #include "wificonfig.h"
+//     #ifdef ENABLE_HTTP
+//         #include "serial2socket.h"
+//     #endif
+//     #ifdef ENABLE_TELNET
+//         #include "telnet_server.h"
+//     #endif
+//     #ifdef ENABLE_NOTIFICATIONS
+//         #include "notifications_service.h"
+//     #endif
+// #endif
 
-#include "solenoid_pen.h"
+// #include "solenoid_pen.h"
 
-#ifdef USE_SERVO_AXES
-    #include "servo_axis.h"
-#endif
+// #ifdef USE_SERVO_AXES
+//     #include "servo_axis.h"
+// #endif
 
-#ifdef USE_TRINAMIC
-    #include "grbl_trinamic.h"
-#endif
+// #ifdef USE_TRINAMIC
+//     #include "grbl_trinamic.h"
+// #endif
 
-#ifdef USE_UNIPOLAR
-    #include "grbl_unipolar.h"
-#endif
+// #ifdef USE_UNIPOLAR
+//     #include "grbl_unipolar.h"
+// #endif
 
-// Called if USE_MACHINE_INIT is defined
-void machine_init();
+// // Called if USE_MACHINE_INIT is defined
+// void machine_init();
 
-// Called if USE_CUSTOM_HOMING is defined
-bool user_defined_homing();
+// // Called if USE_CUSTOM_HOMING is defined
+// bool user_defined_homing();
 
-// Called if USE_KINEMATICS is defined
-void inverse_kinematics(float* target, plan_line_data_t* pl_data, float* position);
-bool kinematics_pre_homing(uint8_t cycle_mask);
-void kinematics_post_homing();
+// // Called if USE_KINEMATICS is defined
+// void inverse_kinematics(float* target, plan_line_data_t* pl_data, float* position);
+// bool kinematics_pre_homing(uint8_t cycle_mask);
+// void kinematics_post_homing();
 
-// Called if USE_FWD_KINEMATIC is defined
-void forward_kinematics(float* position);
+// // Called if USE_FWD_KINEMATIC is defined
+// void forward_kinematics(float* position);
 
-// Called if MACRO_BUTTON_0_PIN or MACRO_BUTTON_1_PIN or MACRO_BUTTON_2_PIN is defined
-void user_defined_macro(uint8_t index);
+// // Called if MACRO_BUTTON_0_PIN or MACRO_BUTTON_1_PIN or MACRO_BUTTON_2_PIN is defined
+// void user_defined_macro(uint8_t index);
 
-// Called if USE_M30 is defined
-void user_m30();
+// // Called if USE_M30 is defined
+// void user_m30();
 
-// Called if USE_TOOL_CHANGE is defined
-void user_tool_change(uint8_t new_tool);
-#ifdef PIDCONTROL
-  #include "grbl_dcpid.h"
-#endif
-#endif
+// // Called if USE_TOOL_CHANGE is defined
+// void user_tool_change(uint8_t new_tool);
+// #ifdef PIDCONTROL
+//   #include "grbl_dcpid.h"
+// #endif
+// // #endif
