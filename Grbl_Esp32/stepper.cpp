@@ -254,7 +254,7 @@ void IRAM_ATTR onStepperDriverTimer(void *para) {  // ISR It is time to take a s
         unipolar_step(st.step_outbits, st.dir_outbits);
     #endif
 #else
-    dc_motor_step(st.step_outbits, st.dir_outbits);
+    update_motors_pid(st.step_outbits, st.dir_outbits);
 #endif
     busy = true;
     // If there is no step segment, attempt to pop one from the stepper buffer
@@ -305,7 +305,7 @@ void IRAM_ATTR onStepperDriverTimer(void *para) {  // ISR It is time to take a s
 #if (N_AXIS > C_AXIS)
             st.steps[C_AXIS] = st.exec_block->steps[C_AXIS] >> st.exec_segment->amass_level;
 #endif
-#endif
+
 #ifdef VARIABLE_SPINDLE
             // Set real-time spindle output as segment is loaded, just prior to the first step.
             spindle_set_speed(st.exec_segment->spindle_pwm);

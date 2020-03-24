@@ -37,7 +37,7 @@ Some features should not be changed. See notes below.
 
 #ifndef config_h
 #define config_h
-// #include <Arduino.h>
+#include <Arduino.h>
 
 // It is no longer necessary to edit this file to choose
 // a machine configuration; edit machine.h instead
@@ -88,10 +88,11 @@ Some features should not be changed. See notes below.
 
 // Include the file that loads the machine-specific config file.
 // machine.h must be edited to choose the desired file.
-#include "Machines/maslow_v2.h"
-
+#include "machine.h"
+#define USE_PIDCONTROL
+#define MASLOW_DEBUG
 // machine_common.h contains settings that do not change
-// #include "machine_common.h"
+#include "machine_common.h"
 
 // Number of axes defined (steppers, servos, etc) (valid range: 3 to 6)
 // Even if your machine only uses less than the minimum of 3, you should select 3
