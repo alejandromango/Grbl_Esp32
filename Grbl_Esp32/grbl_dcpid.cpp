@@ -17,7 +17,7 @@ void IRAM_ATTR onPIDDriverTimer(void *para){
 
 void update_motors_pid(uint8_t step_mask, uint8_t dir_mask){
 #ifndef MASLOW_DEBUG
-    dc_motor_step(step_mask, dir_mask);
+    pid_step(step_mask, dir_mask);
 #else
     Serial.printf("Steps: %X, Directions: %X\n", step_mask, dir_mask);
 #endif

@@ -21,7 +21,8 @@ public:
                adc1_channel_t readbackPin,
                double senseResistor,
                esp_adc_cal_characteristics_t *cal,
-               byte angleCS);
+               byte angleCS,
+               float mmPerRev);
     std::unique_ptr<MiniPID> pid;
     std::unique_ptr<DRV8873LED> motor;
     std::unique_ptr<AS5048A> angleSensor;
@@ -62,8 +63,8 @@ private:
     float rDerivative = 0.0;
 
     // PID tunings for mm position control
-    float mmProportional = 0;
-    float mmIntegral = 0;
+    float mmProportional = 5000;
+    float mmIntegral = 10;
     float mmDerivative = 0;
 
     // PID tunings for speed control
@@ -100,7 +101,7 @@ private:
     float anglePrevious = 0.0;
 
     float mampsCurrent  = 0.0;
-    pid_mode controlMode = REVOLUTIONS;
+    pid_mode controlMode = DISTANCE;
 
 };
 

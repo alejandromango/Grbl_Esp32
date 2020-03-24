@@ -26,7 +26,9 @@ MotorUnit::MotorUnit(TLC59711 *tlc,
                adc1_channel_t readbackPin,
                double senseResistor,
                esp_adc_cal_characteristics_t *cal,
-               byte angleCS){
+               byte angleCS,
+               float mmPerRev){
+    _mmPerRevolution = mmPerRev;
     pid.reset(new MiniPID(0,0,0));
     updatePIDTune();
     pid->setOutputLimits(-65535,65535);

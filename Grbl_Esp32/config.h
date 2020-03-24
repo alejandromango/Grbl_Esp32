@@ -89,7 +89,7 @@ Some features should not be changed. See notes below.
 // Include the file that loads the machine-specific config file.
 // machine.h must be edited to choose the desired file.
 #include "Custom/maslow_v2.h"
-#define MASLOW_DEBUG
+
 // machine_common.h contains settings that do not change
 #include "machine_common.h"
 
