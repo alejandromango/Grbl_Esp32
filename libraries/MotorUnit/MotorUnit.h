@@ -32,6 +32,7 @@ public:
     float  getError();
     int    getOutput();
     float  getInput();
+    bool   getRegulationState();
     void   setControlMode(pid_mode newMode);
     pid_mode   getControlMode();
     float  getRevolutionsFromAngle(float angle);
@@ -85,7 +86,7 @@ private:
     bool disabled = false;
     bool inRegulation = false;
 
-    float accuracy = 0.005; // Accuracy in mm to set in regulation flag
+    float accuracy = 0.05; // Accuracy in mm to set in regulation flag
 
     int output = 0;
     float currentState = 0.0;

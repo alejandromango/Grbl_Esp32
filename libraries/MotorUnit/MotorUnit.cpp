@@ -88,6 +88,14 @@ float MotorUnit::getInput(){
 }
 
 /*!
+ *  @brief  Retrive the current regulation state of the PID loop
+ *  @return A bool representing whether or not the PID loop is within accuracy requirements
+ */
+bool MotorUnit::getRegulationState(){
+    return inRegulation;
+}
+
+/*!
  *  @brief  Set the active control mode
  *  @param newMode The enum member of the desired mode
  */

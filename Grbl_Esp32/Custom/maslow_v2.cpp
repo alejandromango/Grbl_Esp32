@@ -51,6 +51,14 @@ void update_setpoints(float setpoint_1,
     motor5.setSetpoint(setpoint_5);
 }
 
+bool machine_regulation(){
+    return (motor1.getRegulationState() &
+            motor2.getRegulationState() &
+            motor3.getRegulationState() &
+            motor4.getRegulationState() &
+            motor5.getRegulationState());
+}
+
 void print_setpoints(){
     Serial.printf("Motor setpoints: %g, %g, %g, %g, %g\n",
                                     motor1.getSetpoint(),

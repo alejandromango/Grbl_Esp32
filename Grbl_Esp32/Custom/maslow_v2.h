@@ -105,6 +105,7 @@
                             float setpoint_3,
                             float setpoint_4,
                             float setpoint_5);
+    bool machine_regulation();
     void print_setpoints();
     void update_pid_tunes(float new_p,
                             float new_i,
