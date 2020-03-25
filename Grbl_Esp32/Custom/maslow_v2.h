@@ -78,7 +78,7 @@
 #define DC_BOTTOM_RIGHT_STEPS_PER_MM 10
 #define DC_Z_AXIS_STEPS_PER_MM 100 //
 
-#define DC_TOP_LEFT_MM_PER_REV 31.415 // Correct of 10mm pulley
+#define DC_TOP_LEFT_MM_PER_REV 31.415 // Correct for 10mm pulley
 #define DC_TOP_RIGHT_MM_PER_REV 31.415
 #define DC_BOTTOM_LEFT_MM_PER_REV 31.415
 #define DC_BOTTOM_RIGHT_MM_PER_REV 31.415
@@ -105,6 +105,7 @@
                             float setpoint_3,
                             float setpoint_4,
                             float setpoint_5);
+    void print_setpoints();
     void update_pid_tunes(float new_p,
                             float new_i,
                             float new_d);

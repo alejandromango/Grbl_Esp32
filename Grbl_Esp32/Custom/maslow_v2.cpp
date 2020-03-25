@@ -50,6 +50,16 @@ void update_setpoints(float setpoint_1,
     motor4.setSetpoint(setpoint_4);
     motor5.setSetpoint(setpoint_5);
 }
+
+void print_setpoints(){
+    Serial.printf("Motor setpoints: %g, %g, %g, %g, %g\n",
+                                    motor1.getSetpoint(),
+                                    motor2.getSetpoint(),
+                                    motor3.getSetpoint(),
+                                    motor4.getSetpoint(),
+                                    motor5.getSetpoint());
+}
+
 void update_pid_tunes(float new_p, float new_i, float new_d){
     motor1.setPIDTune(new_p, new_i, new_d);
     motor2.setPIDTune(new_p, new_i, new_d);
