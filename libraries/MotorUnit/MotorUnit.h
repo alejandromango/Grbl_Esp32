@@ -22,7 +22,8 @@ public:
                double senseResistor,
                esp_adc_cal_characteristics_t *cal,
                byte angleCS,
-               float mmPerRev);
+               float mmPerRev,
+               float desiredAccuracy);
     std::unique_ptr<MiniPID> pid;
     std::unique_ptr<DRV8873LED> motor;
     std::unique_ptr<AS5048A> angleSensor;
@@ -54,7 +55,7 @@ private:
     void   _disableControl();
     void   _enableControl();
 
-    float _mmPerRevolution = 30;
+    float _mmPerRevolution = 1;
     float lastInterval = 0.001;
     unsigned long lastUpdate = millis();
 
@@ -64,9 +65,9 @@ private:
     float rDerivative = 0.0;
 
     // PID tunings for mm position control
-    float mmProportional = 5000;
-    float mmIntegral = 10;
-    float mmDerivative = 0;
+    float mmProportional = 600000;
+    float mmIntegral = 20;
+    float mmDerivative = 200000;
 
     // PID tunings for speed control
     float vProportional = 0;

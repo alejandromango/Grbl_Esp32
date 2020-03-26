@@ -27,8 +27,10 @@ MotorUnit::MotorUnit(TLC59711 *tlc,
                double senseResistor,
                esp_adc_cal_characteristics_t *cal,
                byte angleCS,
-               float mmPerRev){
+               float mmPerRev,
+               float desiredAccuracy){
     _mmPerRevolution = mmPerRev;
+    accuracy = desiredAccuracy;
     pid.reset(new MiniPID(0,0,0));
     updatePIDTune();
     pid->setOutputLimits(-65535,65535);
@@ -47,7 +49,7 @@ void MotorUnit::setSetpoint(float newSetpoint){
 
 void MotorUnit::step(bool step, bool direction, float mm_per_step){
     if(step){
-        if(direction){
+        if(!direction){
             setpoint += mm_per_step;
         }else{
             setpoint -= mm_per_step;
@@ -235,7 +237,7 @@ void MotorUnit::computePID(){
     output = int(pid->getOutput(currentState,setpoint));
     inRegulation = fabs(errorDist) < accuracy;
 
-    if(~disabled){
+    if(!disabled){
         motor->runAtPID(output);
     }else{
         motor->stop();
