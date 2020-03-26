@@ -1,9 +1,6 @@
 #ifndef grbl_dcpid_h
 #define grbl_dcpid_h
 
-#include "grbl.h"
-#include "config.h"
-
 void PID_Timer_WritePeriod(uint64_t alarm_val);
 void PID_Timer_Start();
 void PID_Timer_Stop();
@@ -11,6 +8,14 @@ void PID_Timer_Stop();
 void pid_init();
 void update_motors_pid(uint8_t step_mask, uint8_t dir_mask);
 
+bool pid_ready();
+void pid_go_idle();
+void pid_wake_up();
+
+extern bool pid_ready_state;
+extern bool grbl_pid_idle;
+extern bool grbl_pid_running;
+extern bool pid_busy;
 
 // -- Task handles for use in the notifications
 // Why are these here? Just copied format from stepper timer, they're not used

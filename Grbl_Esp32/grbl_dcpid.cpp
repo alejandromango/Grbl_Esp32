@@ -1,19 +1,40 @@
-
 #include "grbl.h"
 
-#ifdef USE_PIDCONTROL
-#include "grbl_dcpid.h"
+bool pid_ready_state = true;
+bool grbl_pid_idle = false;
+bool grbl_pid_running = false;
+bool pid_busy = false;
+
 void IRAM_ATTR onPIDDriverTimer(void *para){
 
     TIMERG0.int_clr_timers.t1 = 1;
+    if(pid_busy){
+        Serial.println("Attempted to enter PID interrupt too early");
+        return;
+    }
+    pid_busy = true;
 #ifndef MASLOW_DEBUG
     compute_pid();
+    pid_ready_state = machine_regulation();
 #else
     Serial.println("PID triggered");
 #endif
     TIMERG0.hw_timer[PID_TIMER_INDEX].config.alarm_en = TIMER_ALARM_EN;
+    // timer_set_alarm(PID_TIMER_GROUP, PID_TIMER_INDEX);
+    pid_busy = false;
 }
 
+bool pid_ready(){
+    return pid_ready_state;
+}
+
+void pid_go_idle(){
+    grbl_pid_idle = true;
+}
+
+void pid_wake_up(){
+    grbl_pid_idle = false;
+}
 
 void update_motors_pid(uint8_t step_mask, uint8_t dir_mask){
 #ifndef MASLOW_DEBUG
@@ -47,24 +68,24 @@ void IRAM_ATTR PID_Timer_WritePeriod(uint64_t alarm_val)
 
 void IRAM_ATTR PID_Timer_Start()
 {
-#ifdef ESP_DEBUG
-    //Serial.println("ST Start");
-#endif
-
-    timer_set_counter_value(PID_TIMER_GROUP, PID_TIMER_INDEX, 0x00000000ULL);
-
-    timer_start(PID_TIMER_GROUP, PID_TIMER_INDEX);
-    TIMERG0.hw_timer[PID_TIMER_INDEX].config.alarm_en = TIMER_ALARM_EN;
+    if(!grbl_pid_running){
+        timer_set_counter_value(PID_TIMER_GROUP, PID_TIMER_INDEX, 0x00000000ULL);
+        timer_start(PID_TIMER_GROUP, PID_TIMER_INDEX);
+        TIMERG0.hw_timer[PID_TIMER_INDEX].config.alarm_en = TIMER_ALARM_EN;
+        // timer_set_alarm(PID_TIMER_GROUP, PID_TIMER_INDEX);
+        grbl_pid_running = true;
+        Serial.println("PID Start");
+    }
 
 }
 
 void IRAM_ATTR PID_Timer_Stop()
 {
-#ifdef ESP_DEBUG
-    //Serial.println("PID Stop");
-#endif
-
-    timer_pause(PID_TIMER_GROUP, PID_TIMER_INDEX);
+    if(grbl_pid_running){
+        Serial.println("PID Stop");
+        timer_pause(PID_TIMER_GROUP, PID_TIMER_INDEX);
+        motor_stop();
+        grbl_pid_running = false;
+    }
 
 }
-#endif
