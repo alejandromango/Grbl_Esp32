@@ -261,7 +261,7 @@ void IRAM_ATTR onStepperDriverTimer(void *para) {  // ISR It is time to take a s
         // Serial.println("Tried to update but pid busy");
         return; // Bail and try again later if the last step is not complete
     }
-    // update_motors_pid(st.step_outbits, st.dir_outbits);
+    update_motors_pid(st.step_outbits, st.dir_outbits);
 #endif
     busy = true;
     // If there is no step segment, attempt to pop one from the stepper buffer
