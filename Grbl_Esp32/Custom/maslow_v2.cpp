@@ -32,6 +32,14 @@ void pid_step(uint8_t step_mask, uint8_t dir_mask){
 
 }
 
+void pid_get_state(){
+    motor1.updateControllerState();
+    motor2.updateControllerState();
+    motor3.updateControllerState();
+    motor4.updateControllerState();
+    motor5.updateControllerState();
+}
+
 void motor_stop(){
     motor1.stop();
     motor2.stop();
@@ -48,11 +56,11 @@ void compute_pid(){
     motor5.computePID();
 }
 
-void update_setpoints(float setpoint_1,
-                               float setpoint_2,
-                               float setpoint_3,
-                               float setpoint_4,
-                               float setpoint_5){
+void update_setpoints(double setpoint_1,
+                               double setpoint_2,
+                               double setpoint_3,
+                               double setpoint_4,
+                               double setpoint_5){
     motor1.setSetpoint(setpoint_1);
     motor2.setSetpoint(setpoint_2);
     motor3.setSetpoint(setpoint_3);
@@ -77,7 +85,7 @@ void print_setpoints(){
                                     motor5.getSetpoint());
 }
 
-void update_pid_tunes(float new_p, float new_i, float new_d){
+void update_pid_tunes(double new_p, double new_i, double new_d){
     motor1.setPIDTune(new_p, new_i, new_d);
     motor2.setPIDTune(new_p, new_i, new_d);
     motor3.setPIDTune(new_p, new_i, new_d);

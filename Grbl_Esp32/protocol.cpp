@@ -204,6 +204,7 @@ void protocol_main_loop() {
                 set_stepper_disable(true);
         }
     #ifdef USE_PIDCONTROL
+        update_motors_state();
         if(grbl_pid_idle){ // Only disable the PID loop if the motion is complete
             if(pid_ready()){
                 PID_Timer_Stop();

@@ -7,6 +7,7 @@ void PID_Timer_Stop();
 
 void pid_init();
 void update_motors_pid(uint8_t step_mask, uint8_t dir_mask);
+void update_motors_state();
 
 bool pid_ready();
 void pid_go_idle();

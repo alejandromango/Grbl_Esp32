@@ -16,8 +16,8 @@ void IRAM_ATTR onPIDDriverTimer(void *para){
     }
     pid_busy = true;
 #ifndef MASLOW_DEBUG
-    // compute_pid();
-    // pid_ready_state = machine_regulation();
+    compute_pid();
+    pid_ready_state = machine_regulation();
 #else
     Serial.println("PID triggered");
 #endif
@@ -44,6 +44,10 @@ void update_motors_pid(uint8_t step_mask, uint8_t dir_mask){
 #else
     Serial.printf("Steps: %X, Directions: %X\n", step_mask, dir_mask);
 #endif
+}
+
+void update_motors_state(){
+    pid_get_state();
 }
 
 void pid_init(){

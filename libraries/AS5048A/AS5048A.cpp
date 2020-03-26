@@ -116,21 +116,21 @@ word AS5048A::getRawRotation(bool EnableMedianValue){
 /**
  *Returns the physical quantity in angular degrees, obtained from a binary 14 bit ADC number
  */
-float AS5048A::RotationRawToAngle(word DiscreteCode){
-  return DiscreteCode * (360.0 / float(AS5048A_ANGLE));
+double AS5048A::RotationRawToAngle(word DiscreteCode){
+  return DiscreteCode * (360.0 / double(AS5048A_ANGLE));
 }
 
 /**
  * Returns the physical quantity in angular radians, obtained from the binary 14-bit ADC number
  */
-float AS5048A::RotationRawToRadian(word DiscreteCode){
-  return DiscreteCode * ((2 * PI) / float(AS5048A_ANGLE));
+double AS5048A::RotationRawToRadian(word DiscreteCode){
+  return DiscreteCode * ((2 * PI) / double(AS5048A_ANGLE));
 }
 
 /**
  * Returns the incremental and decrementing angle of rotation into the variable RotationAngle. The variable addresses are changed in the procedure.
  */
-void AS5048A::AbsoluteAngleRotation (float *RotationAngle, float *AngleCurrent, float *AnglePrevious){
+void AS5048A::AbsoluteAngleRotation (double *RotationAngle, double *AngleCurrent, double *AnglePrevious){
 
   if (*AngleCurrent != *AnglePrevious){
 
@@ -153,7 +153,7 @@ void AS5048A::AbsoluteAngleRotation (float *RotationAngle, float *AngleCurrent, 
 /**
 *returns the angle minutes
 */
-float AS5048A::GetAngularMinutes (float AngleAbsolute){
+double AS5048A::GetAngularMinutes (double AngleAbsolute){
   return ( AngleAbsolute - int(AngleAbsolute) ) * 60;
 
 }
@@ -161,7 +161,7 @@ float AS5048A::GetAngularMinutes (float AngleAbsolute){
 /**
 *returns seconds of angle
 */
-float AS5048A::GetAngularSeconds (float AngleAbsolute){
+double AS5048A::GetAngularSeconds (double AngleAbsolute){
   return (AS5048A::GetAngularMinutes(AngleAbsolute) - int(AS5048A::GetAngularMinutes(AngleAbsolute)) ) * 60;
 }
 
@@ -173,7 +173,7 @@ float AS5048A::GetAngularSeconds (float AngleAbsolute){
 *(PI * NormalModule) - Front Pitch
 *20 - the angle of the tooth
 */
-float AS5048A::LinearDisplacementRack ( float WheelRotationAngle, float NormalModule, float NumberGearTeeth){
+double AS5048A::LinearDisplacementRack ( double WheelRotationAngle, double NormalModule, double NumberGearTeeth){
   return WheelRotationAngle * (( ( (PI * NormalModule) / cos(radians(20)) ) * NumberGearTeeth) / 360);
 }
 
@@ -182,7 +182,7 @@ float AS5048A::LinearDisplacementRack ( float WheelRotationAngle, float NormalMo
 *StepGroove - screw thread pitch
 *ScrewRotationAngle - screw rotation angle
 */
-float AS5048A::LinearMotionHelicalGear ( float ScrewRotationAngle, float StepGroove){
+double AS5048A::LinearMotionHelicalGear ( double ScrewRotationAngle, double StepGroove){
   return (ScrewRotationAngle * (StepGroove / 360));
 }
 
