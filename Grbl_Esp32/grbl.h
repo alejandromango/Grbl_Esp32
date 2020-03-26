@@ -116,6 +116,3 @@ void user_m30();
 
 // Called if USE_TOOL_CHANGE is defined
 void user_tool_change(uint8_t new_tool);
-#ifdef PIDCONTROL
-  #include "grbl_dcpid.h"
-#endif

@@ -126,6 +126,10 @@ void loop() {
     gc_sync_position();
     // put your main code here, to run repeatedly:
     report_init_message(CLIENT_ALL);
+// #ifdef USE_PIDCONTROL
+//     pid_wake_up();
+//     PID_Timer_Start();
+// #endif
     // Start Grbl main loop. Processes program inputs and executes them.
     protocol_main_loop();
 }

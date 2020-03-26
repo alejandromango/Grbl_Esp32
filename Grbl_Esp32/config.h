@@ -84,8 +84,6 @@ Some features should not be changed. See notes below.
 #define ENABLE_CONTROL_SW_DEBOUNCE // Default disabled. Uncomment to enable.
 #define CONTROL_SW_DEBOUNCE_PERIOD 32 // in milliseconds default 32 microseconds
 
-#define USE_RMT_STEPS
-
 // Include the file that loads the machine-specific config file.
 // machine.h must be edited to choose the desired file.
 #include "Custom/maslow_v2.h"
