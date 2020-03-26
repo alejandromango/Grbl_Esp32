@@ -254,11 +254,8 @@ void IRAM_ATTR onStepperDriverTimer(void *para) {  // ISR It is time to take a s
         unipolar_step(st.step_outbits, st.dir_outbits);
     #endif
 #else
-    // compute_pid();
-    // pid_ready_state = machine_regulation();
     if(!pid_ready()){
         TIMERG0.hw_timer[STEP_TIMER_INDEX].config.alarm_en = TIMER_ALARM_EN;
-        // Serial.println("Tried to update but pid busy");
         return; // Bail and try again later if the last step is not complete
     }
     update_motors_pid(st.step_outbits, st.dir_outbits);

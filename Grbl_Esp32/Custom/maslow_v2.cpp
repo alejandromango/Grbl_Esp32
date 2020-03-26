@@ -69,11 +69,11 @@ void update_setpoints(double setpoint_1,
 }
 
 bool machine_regulation(){
-    return (motor1.getRegulationState());// &
-            // motor2.getRegulationState() &
-            // motor3.getRegulationState() &
-            // motor4.getRegulationState() &
-            // motor5.getRegulationState());
+    return (motor1.getRegulationState() &
+            motor2.getRegulationState() &
+            motor3.getRegulationState() &
+            motor4.getRegulationState() &
+            motor5.getRegulationState());
 }
 
 void print_setpoints(){
