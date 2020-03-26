@@ -1,5 +1,7 @@
 #include "grbl.h"
 
+#ifdef USE_PIDCONTROL
+
 bool pid_ready_state = true;
 bool grbl_pid_idle = false;
 bool grbl_pid_running = false;
@@ -14,8 +16,8 @@ void IRAM_ATTR onPIDDriverTimer(void *para){
     }
     pid_busy = true;
 #ifndef MASLOW_DEBUG
-    compute_pid();
-    pid_ready_state = machine_regulation();
+    // compute_pid();
+    // pid_ready_state = machine_regulation();
 #else
     Serial.println("PID triggered");
 #endif
@@ -89,3 +91,4 @@ void IRAM_ATTR PID_Timer_Stop()
     }
 
 }
+#endif

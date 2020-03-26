@@ -70,10 +70,6 @@ void protocol_main_loop() {
         // All systems go!
         system_execute_startup(line); // Execute startup script.
     }
-    // #ifdef USE_PIDCONTROL
-    //     pid_wake_up();
-    //     PID_Timer_Start();
-    // #endif
     // ---------------------------------------------------------------------------------
     // Primary loop! Upon a system abort, this exits back to main() to reset the system.
     // This is also where Grbl idles while waiting for something to do.
