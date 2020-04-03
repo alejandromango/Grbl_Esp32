@@ -230,11 +230,9 @@ double MotorUnit::getD(){
  *  command the motor to that output
  */
 void MotorUnit::computePID(){
-    lastInterval = (millis() - lastUpdate)/1000.0;
-    lastUpdate = millis();
     errorDist = setpoint - currentState;
     output = int(pid->getOutput(currentState,setpoint));
-    inRegulation = fabs(errorDist) < accuracy;
+    inRegulation = (fabs(errorDist) < accuracy);// & (mmPerSecond < 0.1);
 
     if(!disabled){
         motor->runAtPID(output);
@@ -254,6 +252,9 @@ void MotorUnit::updateControllerState(){
  *  in mA, or speed in mm/s.
  */
 double MotorUnit::getControllerState(){
+    lastInterval = (millis() - lastUpdate)/1000.0;
+    if(lastInterval < 0.05){return mmPosition;}
+    lastUpdate = millis();
     if(controlMode == CURRENT){
         mampsCurrent = motor->readCurrent();
         return mampsCurrent;
@@ -263,6 +264,8 @@ double MotorUnit::getControllerState(){
         angleSensor->AbsoluteAngleRotation(&angleTotal, &angleCurrent, &anglePrevious);
         if(controlMode == DISTANCE){
             mmPosition = getDistanceFromAngle(angleTotal);
+            double tempSpeed = (getDistanceFromAngle(angleTotal) - getDistanceFromAngle(previousAngleTotal))/lastInterval;
+            mmPerSecond = (mmPerSecond+tempSpeed)/2;
             return mmPosition;
         }else if(controlMode == SPEED){
             mmPerSecond = (getDistanceFromAngle(angleTotal) - getDistanceFromAngle(previousAngleTotal))/lastInterval;
