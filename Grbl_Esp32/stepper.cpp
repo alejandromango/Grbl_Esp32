@@ -674,10 +674,10 @@ void st_wake_up() {
     // Enable Stepper Driver Interrupt
     Stepper_Timer_Start();
 
-#ifdef USE_PIDCONTROL
-    pid_wake_up();
-    PID_Timer_Start();
-#endif
+// #ifdef USE_PIDCONTROL
+//     pid_wake_up();
+//     PID_Timer_Start();
+// #endif
 }
 
 // Reset and clear stepper subsystem variables
@@ -867,9 +867,9 @@ void st_go_idle()
 {
     // Disable Stepper Driver Interrupt. Allow Stepper Port Reset Interrupt to finish, if active.
     Stepper_Timer_Stop();
-#ifdef USE_PIDCONTROL
-    pid_go_idle();
-#endif
+// #ifdef USE_PIDCONTROL
+//     pid_go_idle();
+// #endif
     busy = false;
 
 

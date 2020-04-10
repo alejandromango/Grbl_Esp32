@@ -238,6 +238,7 @@ void MotorUnit::computePID(){
         motor->runAtPID(output);
     }else{
         motor->stop();
+        Serial.println("Motor disabled");
     }
 }
 

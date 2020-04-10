@@ -70,6 +70,11 @@ void protocol_main_loop() {
         // All systems go!
         system_execute_startup(line); // Execute startup script.
     }
+
+#ifdef USE_PIDCONTROL
+    pid_wake_up();
+    PID_Timer_Start();
+#endif
     // ---------------------------------------------------------------------------------
     // Primary loop! Upon a system abort, this exits back to main() to reset the system.
     // This is also where Grbl idles while waiting for something to do.
@@ -205,11 +210,11 @@ void protocol_main_loop() {
         }
     #ifdef USE_PIDCONTROL
         update_motors_state();
-        if(grbl_pid_idle){ // Only disable the PID loop if the motion is complete
-            if(pid_ready()){
-                PID_Timer_Stop();
-            }
-        }
+        // if(grbl_pid_idle){ // Only disable the PID loop if the motion is complete
+        //     if(pid_ready()){
+        //         PID_Timer_Stop();
+        //     }
+        // }
     #endif
     }
     return; /* Never reached */
