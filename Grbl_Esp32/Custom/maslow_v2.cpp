@@ -42,11 +42,11 @@ void inverse_kinematics(float *target, plan_line_data_t *pl_data, float *positio
     z = target[Z_AXIS];
 
     // MASLOWTODO: Drop equations for each of the cable lengths here.
-    maslow_target[DC_TOP_LEFT] = sqrt((x - X_TL_OFFSET)^2 + (y - Y_TL_OFFSET)^2);
-    maslow_target[DC_TOP_RIGHT] = sqrt((x_max - x - X_TR_OFFSET)^2 + (y - Y_TR_OFFSET)^2);
-    maslow_target[DC_BOTTOM_LEFT] = sqrt((x - X_BL_OFFSET)^2 + (y - y_max - Y_BL_OFFSET)^2);
-    maslow_target[DC_BOTTOM_RIGHT] = sqrt((x- x_max - X_BR_OFFSET)^2 + (y - y_max - Y_BR_OFFSET)^2);
-    maslow_target[DC_Z_AXIS] = z;
+    // maslow_target[DC_TOP_LEFT] = sqrt((x - X_TL_OFFSET)^2 + (y - Y_TL_OFFSET)^2);
+    // maslow_target[DC_TOP_RIGHT] = sqrt((x_max - x - X_TR_OFFSET)^2 + (y - Y_TR_OFFSET)^2);
+    // maslow_target[DC_BOTTOM_LEFT] = sqrt((x - X_BL_OFFSET)^2 + (y - y_max - Y_BL_OFFSET)^2);
+    // maslow_target[DC_BOTTOM_RIGHT] = sqrt((x- x_max - X_BR_OFFSET)^2 + (y - y_max - Y_BR_OFFSET)^2);
+    // maslow_target[DC_Z_AXIS] = z;
 
     mc_line(maslow_target, pl_data);
 }
