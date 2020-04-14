@@ -66,6 +66,18 @@
 #define MOTOR_5_BACKWARD 8
 #define MOTOR_5_CS 13
 
+
+// Set the distance of the point where the cord connects to the sled to the bit
+#define X_TL_OFFSET 200 // mm
+#define X_TR_OFFSET 200 // mm
+#define X_BL_OFFSET 200 // mm
+#define X_BR_OFFSET 200 // mm
+
+#define Y_TL_OFFSET 200 // mm
+#define Y_TR_OFFSET 200 // mm
+#define Y_BL_OFFSET 200 // mm
+#define Y_BR_OFFSET 200 // mm
+
 #define DC_TOP_LEFT X_AXIS
 #define DC_TOP_RIGHT Y_AXIS
 #define DC_BOTTOM_LEFT A_AXIS
