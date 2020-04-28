@@ -17,7 +17,6 @@
   You should have received a copy of the GNU General Public License
   along with Grbl.  If not, see <http://www.gnu.org/licenses/>.
 */
-
 #include "grbl.h"
 #include "WiFi.h"
 
@@ -58,6 +57,9 @@ void setup() {
     stepper_init();  // Configure stepper pins and interrupt timers
     system_ini();   // Configure pinout pins and pin-change interrupt (Renamed due to conflict with esp32 files)
     memset(sys_position, 0, sizeof(sys_position)); // Clear machine position.
+#ifdef USE_PIDCONTROL
+    pid_init();
+#endif
 #ifdef USE_PEN_SERVO
     servo_init();
 #endif

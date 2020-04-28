@@ -17,7 +17,6 @@
   You should have received a copy of the GNU General Public License
   along with Grbl.  If not, see <http://www.gnu.org/licenses/>.
 */
-
 // Grbl versioning system
 #define GRBL_VERSION "1.1f"
 #define GRBL_VERSION_BUILD "20200319"
@@ -89,6 +88,10 @@
 
 #ifdef USE_UNIPOLAR
     #include "grbl_unipolar.h"
+#endif
+
+#ifdef USE_PIDCONTROL
+    #include "grbl_dcpid.h"
 #endif
 
 // Called if USE_MACHINE_INIT is defined

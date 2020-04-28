@@ -84,11 +84,9 @@ Some features should not be changed. See notes below.
 #define ENABLE_CONTROL_SW_DEBOUNCE // Default disabled. Uncomment to enable.
 #define CONTROL_SW_DEBOUNCE_PERIOD 32 // in milliseconds default 32 microseconds
 
-#define USE_RMT_STEPS
-
 // Include the file that loads the machine-specific config file.
 // machine.h must be edited to choose the desired file.
-#include "machine.h"
+#include "Custom/maslow_v2.h"
 
 // machine_common.h contains settings that do not change
 #include "machine_common.h"
@@ -112,8 +110,8 @@ Some features should not be changed. See notes below.
 #define BAUD_RATE 115200
 
 //Connect to your local AP with these credentials
-//#define CONNECT_TO_SSID  "your SSID"
-//#define SSID_PASSWORD  "your SSID password"
+#define CONNECT_TO_SSID  "Leek Soup"
+#define SSID_PASSWORD  "Cranberry Pie"
 //CONFIGURE_EYECATCH_BEGIN (DO NOT MODIFY THIS LINE)
 #define ENABLE_BLUETOOTH // enable bluetooth
 

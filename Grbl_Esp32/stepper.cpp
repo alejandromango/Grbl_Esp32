@@ -7,8 +7,8 @@
   Copyright (c) 2011-2016 Sungeun K. Jeon for Gnea Research LLC
   Copyright (c) 2009-2011 Simen Svale Skogsrud
 
-	2018 -	Bart Dring This file was modifed for use on the ESP32
-					CPU. Do not use this with Grbl for atMega328P
+    2018 -	Bart Dring This file was modifed for use on the ESP32
+                    CPU. Do not use this with Grbl for atMega328P
 
   Grbl is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -208,18 +208,18 @@ uint8_t C2_rmt_chan_num = 255;
    after each pulse. The bresenham line tracer algorithm controls all stepper outputs
    simultaneously with these two interrupts.
 
-	 NOTE: This interrupt must be as efficient as possible and complete before the next ISR tick,
+     NOTE: This interrupt must be as efficient as possible and complete before the next ISR tick,
    which for ESP32 Grbl must be less than xx.xusec (TBD). Oscilloscope measured time in
    ISR is 5usec typical and 25usec maximum, well below requirement.
    NOTE: This ISR expects at least one step to be executed per segment.
 
-	 The complete step timing should look this...
-		Direction pin is set
-		An optional (via STEP_PULSE_DELAY in config.h) is put after this
-		The step pin is started
-		A pulse length is determine (via option $0 ... settings.pulse_microseconds)
-		The pulse is ended
-		Direction will remain the same until another step occurs with a change in direction.
+     The complete step timing should look this...
+        Direction pin is set
+        An optional (via STEP_PULSE_DELAY in config.h) is put after this
+        The step pin is started
+        A pulse length is determine (via option $0 ... settings.pulse_microseconds)
+        The pulse is ended
+        Direction will remain the same until another step occurs with a change in direction.
 
 
 */
@@ -229,24 +229,36 @@ uint8_t C2_rmt_chan_num = 255;
 // TODO: Replace direct updating of the int32 position counters in the ISR somehow. Perhaps use smaller
 // int8 variables and update position counters only when a segment completes. This can get complicated
 // with probing and homing cycles that require true real-time positions.
-void IRAM_ATTR onStepperDriverTimer(void* para) { // ISR It is time to take a step =======================================================================================
+void IRAM_ATTR onStepperDriverTimer(void *para) {  // ISR It is time to take a step =======================================================================================
 #ifndef USE_RMT_STEPS
     uint64_t step_pulse_off_time;
 #endif
-    //const int timer_idx = (int)para;  // get the timer index
+//const int timer_idx = (int)para;  // get the timer index
+
     TIMERG0.int_clr_timers.t0 = 1;
+
     if (busy) {
         return;    // The busy-flag is used to avoid reentering this interrupt
     }
+#ifndef USE_PIDCONTROL
     set_direction_pins_on(st.dir_outbits);
-#ifdef USE_RMT_STEPS
-    stepperRMT_Outputs();
+
+    #ifdef USE_RMT_STEPS
+        stepperRMT_Outputs();
+    #else
+        set_stepper_pins_on(st.step_outbits);
+        step_pulse_off_time = esp_timer_get_time() + (settings.pulse_microseconds); // determine when to turn off pulse
+    #endif
+
+    #ifdef USE_UNIPOLAR
+        unipolar_step(st.step_outbits, st.dir_outbits);
+    #endif
 #else
-    set_stepper_pins_on(st.step_outbits);
-    step_pulse_off_time = esp_timer_get_time() + (settings.pulse_microseconds); // determine when to turn off pulse
-#endif
-#ifdef USE_UNIPOLAR
-    unipolar_step(st.step_outbits, st.dir_outbits);
+    if(!pid_ready()){
+        TIMERG0.hw_timer[STEP_TIMER_INDEX].config.alarm_en = TIMER_ALARM_EN;
+        return; // Bail and try again later if the last step is not complete
+    }
+    update_motors_pid(st.step_outbits, st.dir_outbits);
 #endif
     busy = true;
     // If there is no step segment, attempt to pop one from the stepper buffer
@@ -255,34 +267,49 @@ void IRAM_ATTR onStepperDriverTimer(void* para) { // ISR It is time to take a st
         if (segment_buffer_head != segment_buffer_tail) {
             // Initialize new step segment and load number of steps to execute
             st.exec_segment = &segment_buffer[segment_buffer_tail];
+
             // Initialize step segment timing per step and load number of steps to execute.
-            Stepper_Timer_WritePeriod(st.exec_segment->cycles_per_tick);
+            Stepper_Timer_WritePeriod(st.exec_segment->cycles_per_tick); // Remember this line
+
             st.step_count = st.exec_segment->n_step; // NOTE: Can sometimes be zero when moving slow.
             // If the new segment starts a new planner block, initialize stepper variables and counters.
             // NOTE: When the segment data index changes, this indicates a new planner block.
-            if (st.exec_block_index != st.exec_segment->st_block_index) {
+            if ( st.exec_block_index != st.exec_segment->st_block_index ) {
                 st.exec_block_index = st.exec_segment->st_block_index;
                 st.exec_block = &st_block_buffer[st.exec_block_index];
+
                 // Initialize Bresenham line and distance counters
                 st.counter_x = st.counter_y = st.counter_z = (st.exec_block->step_event_count >> 1);
                 // TODO ABC
             }
             st.dir_outbits = st.exec_block->direction_bits ^ settings.dir_invert_mask;
+
 #ifdef ADAPTIVE_MULTI_AXIS_STEP_SMOOTHING
             // With AMASS enabled, adjust Bresenham axis increment counters according to AMASS level.
             st.steps[X_AXIS] = st.exec_block->steps[X_AXIS] >> st.exec_segment->amass_level;
             st.steps[Y_AXIS] = st.exec_block->steps[Y_AXIS] >> st.exec_segment->amass_level;
             st.steps[Z_AXIS] = st.exec_block->steps[Z_AXIS] >> st.exec_segment->amass_level;
-#if (N_AXIS > A_AXIS)
-            st.steps[A_AXIS] = st.exec_block->steps[A_AXIS] >> st.exec_segment->amass_level;
+
+             #if (N_AXIS > A_AXIS)
+               st.steps[A_AXIS] = st.exec_block->steps[A_AXIS] >> st.exec_segment->amass_level;
+            #endif
+            #if (N_AXIS > B_AXIS)
+               st.steps[B_AXIS] = st.exec_block->steps[B_AXIS] >> st.exec_segment->amass_level;
+            #endif
+            #if (N_AXIS > C_AXIS)
+               st.steps[C_AXIS] = st.exec_block->steps[C_AXIS] >> st.exec_segment->amass_level;
+            #endif
+
 #endif
-#if (N_AXIS > B_AXIS)
-            st.steps[B_AXIS] = st.exec_block->steps[B_AXIS] >> st.exec_segment->amass_level;
+
+#ifdef VARIABLE_SPINDLE
+            // Set real-time spindle output as segment is loaded, just prior to the first step.
+            spindle_set_speed(st.exec_segment->spindle_pwm);
 #endif
 #if (N_AXIS > C_AXIS)
             st.steps[C_AXIS] = st.exec_block->steps[C_AXIS] >> st.exec_segment->amass_level;
 #endif
-#endif
+
 #ifdef VARIABLE_SPINDLE
             // Set real-time spindle output as segment is loaded, just prior to the first step.
             spindle_set_speed(st.exec_segment->spindle_pwm);
@@ -495,9 +522,9 @@ void stepper_init() {
     // setup stepper timer interrupt
     /*
     stepperDriverTimer = timerBegin(	0, 													// timer number
-    																F_TIMERS / F_STEPPER_TIMER, // prescaler
-    																true 												// auto reload
-    																);
+                                                                    F_TIMERS / F_STEPPER_TIMER, // prescaler
+                                                                    true 												// auto reload
+                                                                    );
     // attach the interrupt
     timerAttachInterrupt(stepperDriverTimer, &onStepperDriverTimer, true);
     */
@@ -643,8 +670,14 @@ void st_wake_up() {
     // Set step pulse time. Ad hoc computation from oscilloscope. Uses two's complement.
     st.step_pulse_time = -(((settings.pulse_microseconds - 2) * TICKS_PER_MICROSECOND) >> 3);
 #endif
+
     // Enable Stepper Driver Interrupt
     Stepper_Timer_Start();
+
+// #ifdef USE_PIDCONTROL
+//     pid_wake_up();
+//     PID_Timer_Start();
+// #endif
 }
 
 // Reset and clear stepper subsystem variables
@@ -677,37 +710,37 @@ void set_direction_pins_on(uint8_t onMask) {
 #ifdef X_DIRECTION_PIN
     digitalWrite(X_DIRECTION_PIN, (onMask & (1 << X_AXIS)));
 #endif
-#ifdef X2_DIRECTION_PIN // optional ganged axis 
+#ifdef X2_DIRECTION_PIN // optional ganged axis
     digitalWrite(X2_DIRECTION_PIN, (onMask & (1 << X_AXIS)));
 #endif
 #ifdef Y_DIRECTION_PIN
     digitalWrite(Y_DIRECTION_PIN, (onMask & (1 << Y_AXIS)));
 #endif
-#ifdef Y2_DIRECTION_PIN // optional ganged axis 
+#ifdef Y2_DIRECTION_PIN // optional ganged axis
     digitalWrite(Y2_DIRECTION_PIN, (onMask & (1 << Y_AXIS)));
 #endif
 #ifdef Z_DIRECTION_PIN
     digitalWrite(Z_DIRECTION_PIN, (onMask & (1 << Z_AXIS)));
 #endif
-#ifdef Z2_DIRECTION_PIN // optional ganged axis 
+#ifdef Z2_DIRECTION_PIN // optional ganged axis
     digitalWrite(Z2_DIRECTION_PIN, (onMask & (1 << Z_AXIS)));
 #endif
 #ifdef A_DIRECTION_PIN
     digitalWrite(A_DIRECTION_PIN, (onMask & (1 << A_AXIS)));
 #endif
-#ifdef A2_DIRECTION_PIN // optional ganged axis 
+#ifdef A2_DIRECTION_PIN // optional ganged axis
     digitalWrite(A2_DIRECTION_PIN, (onMask & (1 << A_AXIS)));
 #endif
 #ifdef B_DIRECTION_PIN
     digitalWrite(B_DIRECTION_PIN, (onMask & (1 << B_AXIS)));
 #endif
-#ifdef B2_DIRECTION_PIN // optional ganged axis 
+#ifdef B2_DIRECTION_PIN // optional ganged axis
     digitalWrite(B2_DIRECTION_PIN, (onMask & (1 << B_AXIS)));
 #endif
 #ifdef C_DIRECTION_PIN
     digitalWrite(C_DIRECTION_PIN, (onMask & (1 << C_AXIS)));
 #endif
-#ifdef C2_DIRECTION_PIN // optional ganged axis 
+#ifdef C2_DIRECTION_PIN // optional ganged axis
     digitalWrite(C2_DIRECTION_PIN, (onMask & (1 << C_AXIS)));
 #endif
 }
@@ -830,21 +863,35 @@ inline IRAM_ATTR static void stepperRMT_Outputs() {
 #endif
 
 // Stepper shutdown
-void st_go_idle() {
+void st_go_idle()
+{
     // Disable Stepper Driver Interrupt. Allow Stepper Port Reset Interrupt to finish, if active.
     Stepper_Timer_Stop();
+// #ifdef USE_PIDCONTROL
+//     pid_go_idle();
+// #endif
     busy = false;
+
+
+
     bool pin_state = false;
     // Set stepper driver idle state, disabled or enabled, depending on settings and circumstances.
     if (((settings.stepper_idle_lock_time != 0xff) || sys_rt_exec_alarm || sys.state == STATE_SLEEP) && sys.state != STATE_HOMING) {
+
+
         // Force stepper dwell to lock axes for a defined amount of time to ensure the axes come to a complete
         // stop and not drift from residual inertial forces at the end of the last movement.
+
         stepper_idle = true; // esp32 work around for disable in main loop
         stepper_idle_counter = esp_timer_get_time() + (settings.stepper_idle_lock_time * 1000); // * 1000 because the time is in uSecs
+
+
         //vTaskDelay(settings.stepper_idle_lock_time / portTICK_PERIOD_MS);	// this probably does not work when called from ISR
         //pin_state = true;
-    } else
+    } else {
         set_stepper_disable(pin_state);
+    }
+
     set_stepper_pins_on(0);
 }
 
