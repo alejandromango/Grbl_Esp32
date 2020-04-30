@@ -66,9 +66,9 @@ private:
     double rDerivative = 0.0;
 
     // PID tunings for mm position control
-    double mmProportional = 600000;
-    double mmIntegral = 20;
-    double mmDerivative = 200000;
+    double mmProportional = 300000;// 600000; Commented values for 24v 100rpm gearmotor.
+    double mmIntegral = 200;// 20;            Active values for 6v 30 RPM  gearmotor
+    double mmDerivative = 0;// 200000;
 
     // PID tunings for speed control
     double vProportional = 0;

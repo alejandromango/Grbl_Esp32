@@ -79,10 +79,10 @@
 #define Y_BR_OFFSET 0 // mm
 
 #define DC_TOP_LEFT X_AXIS
-#define DC_TOP_RIGHT Y_AXIS
+#define DC_TOP_RIGHT Z_AXIS
 #define DC_BOTTOM_LEFT A_AXIS
 #define DC_BOTTOM_RIGHT B_AXIS
-#define DC_Z_AXIS Z_AXIS
+#define DC_Z_AXIS Y_AXIS
 
 #define DC_TOP_LEFT_STEPS_PER_MM 10 //.1mm per step is required resolution
 #define DC_TOP_RIGHT_STEPS_PER_MM 10
@@ -96,11 +96,11 @@
 #define DC_BOTTOM_RIGHT_MAX_RATE 100.0 // mm/min
 #define DC_Z_AXIS_MAX_RATE 100.0 // mm/min
 
-#define DC_TOP_LEFT_MM_PER_REV 1//31.415 // Correct for 10mm pulley
-#define DC_TOP_RIGHT_MM_PER_REV 1//31.415
-#define DC_BOTTOM_LEFT_MM_PER_REV 1//31.415
-#define DC_BOTTOM_RIGHT_MM_PER_REV 1//31.415
-#define DC_Z_AXIS_MM_PER_REV 1//31.415 //
+#define DC_TOP_LEFT_MM_PER_REV 29.92//31.415 // Correct for 10mm pulley
+#define DC_TOP_RIGHT_MM_PER_REV 29.92//31.415
+#define DC_BOTTOM_LEFT_MM_PER_REV 29.92//31.415
+#define DC_BOTTOM_RIGHT_MM_PER_REV 29.92//31.415
+#define DC_Z_AXIS_MM_PER_REV 29.92//31.415 //
 
 // Override defaults
 
@@ -117,6 +117,7 @@
 #define DEFAULT_B_MAX_RATE DC_BOTTOM_RIGHT_MAX_RATE // mm/min
 
 #define USE_PIDCONTROL
+#define USE_KINEMATICS
 #define USE_MACHINE_INIT
 // ================ Custom function Prototypes ======================
 #ifndef maslow_v2_h

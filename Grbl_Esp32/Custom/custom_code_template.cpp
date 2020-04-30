@@ -101,7 +101,7 @@ void inverse_kinematics(float *target, plan_line_data_t *pl_data, float *positio
 
   cycle_mask is a bit mask of the axes being homed this time.
 */
-bool kinematics_pre_homing(uint8_t cycle_mask))
+bool kinematics_pre_homing(uint8_t cycle_mask)
 {
   return false; // finish normal homing cycle
 }

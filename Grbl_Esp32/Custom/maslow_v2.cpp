@@ -14,8 +14,8 @@ MotorUnit motor3(&tlc, MOTOR_3_FORWARD, MOTOR_3_BACKWARD, MOTOR_3_ADC, RSENSE, a
 MotorUnit motor4(&tlc, MOTOR_4_FORWARD, MOTOR_4_BACKWARD, MOTOR_4_ADC, RSENSE, adc_1_characterisitics, MOTOR_4_CS, DC_BOTTOM_RIGHT_MM_PER_REV, 1);
 MotorUnit motor5(&tlc, MOTOR_5_FORWARD, MOTOR_5_BACKWARD, MOTOR_5_ADC, RSENSE, adc_1_characterisitics, MOTOR_5_CS, DC_Z_AXIS_MM_PER_REV, 1);
 
-static float x_max = 2438.4; // 8 feet in mm
-static float y_max = 1219.2; // 4 feet in mm
+static float x_max = 285.75;
+static float y_max = 336.55;
 
 
 void machine_init(){
@@ -52,6 +52,19 @@ void inverse_kinematics(float *target, plan_line_data_t *pl_data, float *positio
 }
 
 /*
+  user_defined_homing() is called at the begining of the normal Grbl_ESP32 homing
+  sequence.  If user_defined_homing() returns false, the rest of normal Grbl_ESP32
+  homing is skipped if it returns false, other normal homing continues.  For
+  example, if you need to manually prep the machine for homing, you could implement
+  user_defined_homing() to wait for some button to be pressed, then return true.
+*/
+bool user_defined_homing()
+{
+  // True = done with homing, false = continue with normal Grbl_ESP32 homing
+  return true;
+}
+
+/*
  Forward kinematics for maslow CNC
  MASLOWTODO: Back calculate the XYZ position based on the actual cable lengths.
 */
@@ -62,6 +75,24 @@ void forward_kinematics(float *position) {
     memcpy(current_position, sys_position, sizeof(sys_position));
     system_convert_array_steps_to_mpos(print_position, current_position);
 
+}
+
+/*
+  kinematics_pre_homing() is called before normal homing
+  You can use it to do special homing or just to set stuff up
+
+  cycle_mask is a bit mask of the axes being homed this time.
+*/
+bool kinematics_pre_homing(uint8_t cycle_mask)
+{
+  return false; // finish normal homing cycle
+}
+
+/*
+  kinematics_post_homing() is called at the end of normal homing
+*/
+void kinematics_post_homing()
+{
 }
 
 void pid_step(uint8_t step_mask, uint8_t dir_mask){
