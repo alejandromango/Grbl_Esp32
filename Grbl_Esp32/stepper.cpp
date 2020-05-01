@@ -259,9 +259,9 @@ void IRAM_ATTR onStepperDriverTimer(void *para) {  // ISR It is time to take a s
     if(!pid_ready()){
         stepper_blocked_counter++;
         TIMERG0.hw_timer[STEP_TIMER_INDEX].config.alarm_en = TIMER_ALARM_EN;
-        if(stepper_blocked_counter > 10){
-            Serial.println("Motors not ready");
-        }
+        // if(stepper_blocked_counter > 10){
+        //     Serial.println("Motors not ready");
+        // }
         return; // Bail and try again later if the last step is not complete
     }
     stepper_blocked_counter = 0;

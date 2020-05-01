@@ -117,7 +117,7 @@
 #define DEFAULT_B_MAX_RATE DC_BOTTOM_RIGHT_MAX_RATE // mm/min
 
 #define USE_PIDCONTROL
-#define USE_KINEMATICS
+// #define USE_KINEMATICS
 #define USE_MACHINE_INIT
 // ================ Custom function Prototypes ======================
 #ifndef maslow_v2_h

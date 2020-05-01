@@ -29,6 +29,7 @@ uint8_t ganged_mode = SQUARING_MODE_DUAL;
 
 // this allows kinematics to be used.
 void mc_line_kins(float* target, plan_line_data_t* pl_data, float* position) {
+    Serial.println("mc_line");
 #ifndef USE_KINEMATICS
     mc_line(target, pl_data);
 #else // else use kinematics
