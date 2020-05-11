@@ -47,7 +47,7 @@ void inverse_kinematics(float *target, plan_line_data_t *pl_data, float *positio
     // MASLOWTODO: Drop equations for each of the cable lengths here.
     maslow_target[DC_TOP_LEFT] = sqrt(pow(x + X_TL_OFFSET, 2) + pow(y + Y_TL_OFFSET, 2));
     maslow_target[DC_TOP_RIGHT] = sqrt(pow(x_max - x + X_TR_OFFSET, 2) + pow(y + Y_TR_OFFSET, 2));
-    maslow_target[DC_BOTTOM_LEFT] = sqrt(pow(x + X_BL_OFFSET, 2) + pow(ymax - y + Y_BL_OFFSET, 2));
+    maslow_target[DC_BOTTOM_LEFT] = sqrt(pow(x + X_BL_OFFSET, 2) + pow(y_max - y + Y_BL_OFFSET, 2));
     maslow_target[DC_BOTTOM_RIGHT] = sqrt(pow(x_max - x + X_BR_OFFSET, 2) + pow(y - y_max + Y_BR_OFFSET, 2));
     maslow_target[DC_Z_AXIS] = z;
 
@@ -113,11 +113,11 @@ void kinematics_post_homing()
 }
 
 void pid_step(uint8_t step_mask, uint8_t dir_mask){
-    motor1.step(step_mask & (1<<DC_TOP_LEFT), dir_mask & (1<<DC_TOP_LEFT), 1.0/DC_TOP_LEFT_STEPS_PER_MM);
-    motor2.step(step_mask & (1<<DC_TOP_RIGHT), dir_mask & (1<<DC_TOP_RIGHT), 1.0/DC_TOP_RIGHT_STEPS_PER_MM);
-    motor3.step(step_mask & (1<<DC_BOTTOM_LEFT), dir_mask & (1<<DC_BOTTOM_LEFT), 1.0/DC_BOTTOM_LEFT_STEPS_PER_MM);
-    motor4.step(step_mask & (1<<DC_BOTTOM_RIGHT), dir_mask & (1<<DC_BOTTOM_RIGHT), 1.0/DC_BOTTOM_RIGHT_STEPS_PER_MM);
-    motor5.step(step_mask & (1<<DC_Z_AXIS), dir_mask & (1<<DC_Z_AXIS), 1.0/DC_Z_AXIS_STEPS_PER_MM);
+    motor1.step(step_mask & (1<<DC_BOTTOM_LEFT), dir_mask & (1<<DC_BOTTOM_LEFT), 1.0/DC_BOTTOM_LEFT_STEPS_PER_MM);
+    motor2.step(step_mask & (1<<DC_Z_AXIS), dir_mask & (1<<DC_Z_AXIS), 1.0/DC_Z_AXIS_STEPS_PER_MM);
+    motor3.step(step_mask & (1<<DC_TOP_LEFT), dir_mask & (1<<DC_TOP_LEFT), 1.0/DC_TOP_LEFT_STEPS_PER_MM);
+    motor4.step(step_mask & (1<<DC_TOP_RIGHT), dir_mask & (1<<DC_TOP_RIGHT), 1.0/DC_TOP_RIGHT_STEPS_PER_MM);
+    motor5.step(step_mask & (1<<DC_BOTTOM_RIGHT), dir_mask & (1<<DC_BOTTOM_RIGHT), 1.0/DC_BOTTOM_RIGHT_STEPS_PER_MM);
 
 }
 
