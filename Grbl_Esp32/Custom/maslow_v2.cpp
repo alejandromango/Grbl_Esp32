@@ -14,8 +14,13 @@ MotorUnit motor3(&tlc, MOTOR_3_FORWARD, MOTOR_3_BACKWARD, MOTOR_3_ADC, RSENSE, a
 MotorUnit motor4(&tlc, MOTOR_4_FORWARD, MOTOR_4_BACKWARD, MOTOR_4_ADC, RSENSE, adc_1_characterisitics, MOTOR_4_CS, DC_BOTTOM_RIGHT_MM_PER_REV, 1);
 MotorUnit motor5(&tlc, MOTOR_5_FORWARD, MOTOR_5_BACKWARD, MOTOR_5_ADC, RSENSE, adc_1_characterisitics, MOTOR_5_CS, DC_Z_AXIS_MM_PER_REV, 1);
 
-static float x_max = 285.75;
-static float y_max = 336.55;
+static float x_max = 215.9; //285.9; 8.5 in
+static float y_max = 279.4; //349.4; 11 in
+
+static float top_dist = 285.9;
+static float bottom_dist = 285.9;
+static float left_dist = 349.4;
+static float right_dist = 349.4;
 
 
 void machine_init(){
@@ -42,10 +47,10 @@ void inverse_kinematics(float *target, plan_line_data_t *pl_data, float *positio
     z = target[Z_AXIS];
 
     // MASLOWTODO: Drop equations for each of the cable lengths here.
-    maslow_target[DC_TOP_LEFT] = sqrt(pow(x - X_TL_OFFSET, 2) + pow(y - Y_TL_OFFSET, 2));
-    maslow_target[DC_TOP_RIGHT] = sqrt(pow(x_max - x - X_TR_OFFSET, 2) + pow(y - Y_TR_OFFSET, 2));
-    maslow_target[DC_BOTTOM_LEFT] = sqrt(pow(x - X_BL_OFFSET, 2) + pow(y - y_max - Y_BL_OFFSET, 2));
-    maslow_target[DC_BOTTOM_RIGHT] = sqrt(pow(x- x_max - X_BR_OFFSET, 2) + pow(y - y_max - Y_BR_OFFSET, 2));
+    maslow_target[DC_TOP_LEFT] = sqrt(pow(x + X_TL_OFFSET, 2) + pow(y + Y_TL_OFFSET, 2));
+    maslow_target[DC_TOP_RIGHT] = sqrt(pow(x_max - x + X_TR_OFFSET, 2) + pow(y + Y_TR_OFFSET, 2));
+    maslow_target[DC_BOTTOM_LEFT] = sqrt(pow(x + X_BL_OFFSET, 2) + pow(ymax - y + Y_BL_OFFSET, 2));
+    maslow_target[DC_BOTTOM_RIGHT] = sqrt(pow(x_max - x + X_BR_OFFSET, 2) + pow(y - y_max + Y_BR_OFFSET, 2));
     maslow_target[DC_Z_AXIS] = z;
 
     Serial.printf("Targets, Clockwise: %f, %f, %f, %f",
@@ -80,7 +85,15 @@ void forward_kinematics(float *position) {
     int32_t current_position[N_AXIS];  // Copy current state of the system position variable
     memcpy(current_position, sys_position, sizeof(sys_position));
     system_convert_array_steps_to_mpos(print_position, current_position);
-
+    original_position[X_AXIS] = print_position[X_AXIS] - gc_state.coord_system[X_AXIS] + gc_state.coord_offset[X_AXIS];
+    original_position[Y_AXIS] = print_position[Y_AXIS] - gc_state.coord_system[Y_AXIS] + gc_state.coord_offset[Y_AXIS];
+    original_position[Z_AXIS] = print_position[Z_AXIS] - gc_state.coord_system[Z_AXIS] + gc_state.coord_offset[Z_AXIS];
+//************ Stuff above this line copied from polar_coaster.cpp, not well understood ***************
+    float cos_tl_angle = (pow(top_dist, 2) + pow(position[DC_TOP_LEFT], 2) - pow(position[DC_TOP_RIGHT], 2))/(2*top_dist*position[DC_TOP_LEFT]);
+    float tl_angle = acos(cos_tl_angle);
+    position[Y_AXIS] = sin(tl_angle) * original_position[DC_TOP_LEFT];
+    position[X_AXIS] = sin(M_PI/2 - tl_angle) * original_position[DC_TOP_LEFT];
+    position[Z_AXIS] = original_position[Z_AXIS];
 }
 
 /*
