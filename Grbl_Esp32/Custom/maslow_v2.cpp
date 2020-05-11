@@ -26,8 +26,6 @@ static float right_dist = 349.4;
 void machine_init(){
     tlc.begin();
     tlc.write();
-    Serial.println("machine setup complete");
-
 }
 
 /*
