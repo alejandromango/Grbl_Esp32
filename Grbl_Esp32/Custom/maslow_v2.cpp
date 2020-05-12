@@ -43,7 +43,7 @@ void inverse_kinematics(float *target, plan_line_data_t *pl_data, float *positio
     x = target[X_AXIS];
     y = target[Y_AXIS];
     z = target[Z_AXIS];
-
+    Serial.println("Inverse kins init");
     // MASLOWTODO: Drop equations for each of the cable lengths here.
     maslow_target[DC_TOP_LEFT] = sqrt(pow(x + X_TL_OFFSET, 2) + pow(y + Y_TL_OFFSET, 2));
     maslow_target[DC_TOP_RIGHT] = sqrt(pow(x_max - x + X_TR_OFFSET, 2) + pow(y + Y_TR_OFFSET, 2));
@@ -51,11 +51,11 @@ void inverse_kinematics(float *target, plan_line_data_t *pl_data, float *positio
     maslow_target[DC_BOTTOM_RIGHT] = sqrt(pow(x_max - x + X_BR_OFFSET, 2) + pow(y - y_max + Y_BR_OFFSET, 2));
     maslow_target[DC_Z_AXIS] = z;
 
-    Serial.printf("Targets, Clockwise: %f, %f, %f, %f",
+    Serial.printf("Targets, Clockwise: %f, %f, %f, %f\n",
                                 maslow_target[DC_TOP_LEFT],
                                 maslow_target[DC_TOP_RIGHT],
-                                maslow_target[DC_BOTTOM_LEFT],
-                                maslow_target[DC_BOTTOM_RIGHT]);
+                                maslow_target[DC_BOTTOM_RIGHT],
+                                maslow_target[DC_BOTTOM_LEFT]);
 
     mc_line(maslow_target, pl_data);
 }
@@ -163,6 +163,15 @@ bool machine_regulation(){
             motor3.getRegulationState() &
             motor4.getRegulationState() &
             motor5.getRegulationState());
+}
+
+void print_regulation(){
+    Serial.printf("Motors Regulation: %g, %g, %g, %g, %g\n",
+                                    motor1.getRegulationState(),
+                                    motor2.getRegulationState(),
+                                    motor3.getRegulationState(),
+                                    motor4.getRegulationState(),
+                                    motor5.getRegulationState());
 }
 
 void print_setpoints(){

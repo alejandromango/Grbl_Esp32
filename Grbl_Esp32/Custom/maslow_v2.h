@@ -117,7 +117,8 @@
 #define DEFAULT_B_MAX_RATE DC_BOTTOM_RIGHT_MAX_RATE // mm/min
 
 #define USE_PIDCONTROL
-// #define USE_KINEMATICS
+#define USE_KINEMATICS
+#define USE_FORWARD_KINEMATICS
 #define USE_MACHINE_INIT
 // ================ Custom function Prototypes ======================
 #ifndef maslow_v2_h
@@ -141,6 +142,7 @@
                             double setpoint_4,
                             double setpoint_5);
     bool machine_regulation();
+    void print_regulation();
     void print_setpoints();
     void update_pid_tunes(double new_p,
                             double new_i,
