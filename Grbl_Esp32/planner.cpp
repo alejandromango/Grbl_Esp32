@@ -422,6 +422,17 @@ uint8_t plan_buffer_line(float* target, plan_line_data_t* pl_data) {
                                 target[DC_TOP_RIGHT],
                                 target[DC_BOTTOM_RIGHT],
                                 target[DC_BOTTOM_LEFT]);
+
+    float print_position[N_AXIS];
+    system_convert_array_steps_to_mpos(print_position, sys_position);
+    // forward_kinematics(print_position);
+
+    Serial.printf("Current Position, Clockwise: %f, %f, %f, %f\n",
+                                print_position[DC_TOP_LEFT],
+                                print_position[DC_TOP_RIGHT],
+                                print_position[DC_BOTTOM_RIGHT],
+                                print_position[DC_BOTTOM_LEFT]);
+
     return (PLAN_OK);
 }
 

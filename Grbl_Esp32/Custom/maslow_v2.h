@@ -79,10 +79,10 @@
 #define Y_BR_OFFSET 35 // mm
 
 #define DC_TOP_LEFT X_AXIS
-#define DC_TOP_RIGHT Z_AXIS
+#define DC_TOP_RIGHT Y_AXIS
 #define DC_BOTTOM_LEFT A_AXIS
 #define DC_BOTTOM_RIGHT B_AXIS
-#define DC_Z_AXIS Y_AXIS
+#define DC_Z_AXIS Z_AXIS
 
 #define DC_TOP_LEFT_STEPS_PER_MM 10 //.1mm per step is required resolution
 #define DC_TOP_RIGHT_STEPS_PER_MM 10
