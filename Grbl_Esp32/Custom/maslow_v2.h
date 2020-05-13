@@ -84,11 +84,11 @@
 #define DC_BOTTOM_RIGHT B_AXIS
 #define DC_Z_AXIS Z_AXIS
 
-#define DC_TOP_LEFT_STEPS_PER_MM 10 //.1mm per step is required resolution
-#define DC_TOP_RIGHT_STEPS_PER_MM 10
-#define DC_BOTTOM_LEFT_STEPS_PER_MM 10
-#define DC_BOTTOM_RIGHT_STEPS_PER_MM 10
-#define DC_Z_AXIS_STEPS_PER_MM 10 //
+#define DC_TOP_LEFT_STEPS_PER_MM 1 //.1mm per step is required resolution
+#define DC_TOP_RIGHT_STEPS_PER_MM 1
+#define DC_BOTTOM_LEFT_STEPS_PER_MM 1
+#define DC_BOTTOM_RIGHT_STEPS_PER_MM 1
+#define DC_Z_AXIS_STEPS_PER_MM 1 //
 
 #define DC_TOP_LEFT_MAX_RATE 100.0 // mm/min
 #define DC_TOP_RIGHT_MAX_RATE 100.0 // mm/min
@@ -118,7 +118,7 @@
 
 #define USE_PIDCONTROL
 #define USE_KINEMATICS
-#define USE_FORWARD_KINEMATICS
+#define USE_FWD_KINEMATIC
 #define USE_MACHINE_INIT
 // ================ Custom function Prototypes ======================
 #ifndef maslow_v2_h
