@@ -132,6 +132,7 @@ void loop() {
     gc_sync_position();
     // put your main code here, to run repeatedly:
     report_init_message(CLIENT_ALL);
+    print_inputs();
     // Start Grbl main loop. Processes program inputs and executes them.
     protocol_main_loop();
 }

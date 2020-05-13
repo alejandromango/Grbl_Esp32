@@ -96,10 +96,10 @@
 #define DC_BOTTOM_RIGHT_MAX_RATE 100.0 // mm/min
 #define DC_Z_AXIS_MAX_RATE 100.0 // mm/min
 
-#define DC_TOP_LEFT_MM_PER_REV 29.92// Correct for 10mm pulley
+#define DC_TOP_LEFT_MM_PER_REV -29.92// Correct for 10mm pulley
 #define DC_TOP_RIGHT_MM_PER_REV 29.92//
 #define DC_BOTTOM_LEFT_MM_PER_REV 29.92//
-#define DC_BOTTOM_RIGHT_MM_PER_REV 29.92//
+#define DC_BOTTOM_RIGHT_MM_PER_REV -29.92//
 #define DC_Z_AXIS_MM_PER_REV 29.92//
 
 // Override defaults
@@ -144,6 +144,7 @@
     bool machine_regulation();
     void print_regulation();
     void print_setpoints();
+    void print_inputs();
     void update_pid_tunes(double new_p,
                             double new_i,
                             double new_d);

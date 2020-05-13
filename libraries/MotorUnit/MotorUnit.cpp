@@ -5,6 +5,7 @@
  *  By Alexander Martin-Ginnold for Maslow CNC
  ****************************************************/
 #include "MotorUnit.h"
+#include "math.h"
 
 /*!
  *  @brief  Instantiates a new MotorUnit class. Instantiates classes for
@@ -231,7 +232,7 @@ double MotorUnit::getD(){
  */
 void MotorUnit::computePID(){
     errorDist = setpoint - currentState;
-    output = int(pid->getOutput(currentState,setpoint));
+    output = copysign(int(pid->getOutput(currentState,setpoint)), errorDist);
     inRegulation = (fabs(errorDist) < accuracy);// & (mmPerSecond < 0.1);
 
     if(!disabled){

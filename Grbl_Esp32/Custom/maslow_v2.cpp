@@ -8,11 +8,11 @@ esp_err_t config_err_3 = adc1_config_channel_atten(MOTOR_3_ADC, ADC_ATTEN_DB_2_5
 esp_err_t config_err_4 = adc1_config_channel_atten(MOTOR_4_ADC, ADC_ATTEN_DB_2_5);
 esp_err_t config_err_5 = adc1_config_channel_atten(MOTOR_5_ADC, ADC_ATTEN_DB_2_5);
 TLC59711 tlc(NUM_TLC59711, TLC_CLOCK, TLC_DATA); // MASLOW_TODO: Will this get garbage collected?
-MotorUnit motor1(&tlc, MOTOR_1_FORWARD, MOTOR_1_BACKWARD, MOTOR_1_ADC, RSENSE, adc_1_characterisitics, MOTOR_1_CS, DC_TOP_LEFT_MM_PER_REV, 1);
-MotorUnit motor2(&tlc, MOTOR_2_FORWARD, MOTOR_2_BACKWARD, MOTOR_2_ADC, RSENSE, adc_1_characterisitics, MOTOR_2_CS, DC_TOP_RIGHT_MM_PER_REV, 1);
-MotorUnit motor3(&tlc, MOTOR_3_FORWARD, MOTOR_3_BACKWARD, MOTOR_3_ADC, RSENSE, adc_1_characterisitics, MOTOR_3_CS, DC_BOTTOM_LEFT_MM_PER_REV, 1);
-MotorUnit motor4(&tlc, MOTOR_4_FORWARD, MOTOR_4_BACKWARD, MOTOR_4_ADC, RSENSE, adc_1_characterisitics, MOTOR_4_CS, DC_BOTTOM_RIGHT_MM_PER_REV, 1);
-MotorUnit motor5(&tlc, MOTOR_5_FORWARD, MOTOR_5_BACKWARD, MOTOR_5_ADC, RSENSE, adc_1_characterisitics, MOTOR_5_CS, DC_Z_AXIS_MM_PER_REV, 1);
+MotorUnit motor1(&tlc, MOTOR_1_FORWARD, MOTOR_1_BACKWARD, MOTOR_1_ADC, RSENSE, adc_1_characterisitics, MOTOR_1_CS, DC_BOTTOM_LEFT_MM_PER_REV, 1);
+MotorUnit motor2(&tlc, MOTOR_2_FORWARD, MOTOR_2_BACKWARD, MOTOR_2_ADC, RSENSE, adc_1_characterisitics, MOTOR_2_CS, DC_Z_AXIS_MM_PER_REV, 1);
+MotorUnit motor3(&tlc, MOTOR_3_FORWARD, MOTOR_3_BACKWARD, MOTOR_3_ADC, RSENSE, adc_1_characterisitics, MOTOR_3_CS, DC_TOP_LEFT_MM_PER_REV, 1);
+MotorUnit motor4(&tlc, MOTOR_4_FORWARD, MOTOR_4_BACKWARD, MOTOR_4_ADC, RSENSE, adc_1_characterisitics, MOTOR_4_CS, DC_TOP_RIGHT_MM_PER_REV, 1);
+MotorUnit motor5(&tlc, MOTOR_5_FORWARD, MOTOR_5_BACKWARD, MOTOR_5_ADC, RSENSE, adc_1_characterisitics, MOTOR_5_CS, DC_BOTTOM_RIGHT_MM_PER_REV, 1);
 
 static float x_max = 215.9; //285.9; 8.5 in
 static float y_max = 279.4; //349.4; 11 in
@@ -26,6 +26,32 @@ static float right_dist = 349.4;
 void machine_init(){
     tlc.begin();
     tlc.write();
+    pid_get_state();
+    print_setpoints();
+    update_setpoints(
+        motor1.getInput(),
+        motor2.getInput(),
+        motor3.getInput(),
+        motor4.getInput(),
+        motor5.getInput());
+    print_setpoints();
+    motor1.motor->fullBackward();
+    motor2.motor->fullBackward();
+    motor3.motor->fullBackward();
+    motor4.motor->fullBackward();
+    motor5.motor->fullBackward();
+    int i;
+    for(i = 0; i<200 ; i++){
+        delayMicroseconds(50000);
+        pid_get_state();
+    }
+    update_setpoints(
+        motor1.getInput(),
+        motor2.getInput(),
+        motor3.getInput(),
+        motor4.getInput(),
+        motor5.getInput());
+    print_setpoints();
 }
 
 /*
@@ -43,19 +69,12 @@ void inverse_kinematics(float *target, plan_line_data_t *pl_data, float *positio
     x = target[X_AXIS];
     y = target[Y_AXIS];
     z = target[Z_AXIS];
-    Serial.println("Inverse kins init");
     // MASLOWTODO: Drop equations for each of the cable lengths here.
     maslow_target[DC_TOP_LEFT] = sqrt(pow(x + X_TL_OFFSET, 2) + pow(y + Y_TL_OFFSET, 2));
     maslow_target[DC_TOP_RIGHT] = sqrt(pow(x_max - x + X_TR_OFFSET, 2) + pow(y + Y_TR_OFFSET, 2));
     maslow_target[DC_BOTTOM_LEFT] = sqrt(pow(x + X_BL_OFFSET, 2) + pow(y_max - y + Y_BL_OFFSET, 2));
     maslow_target[DC_BOTTOM_RIGHT] = sqrt(pow(x_max - x + X_BR_OFFSET, 2) + pow(y - y_max + Y_BR_OFFSET, 2));
     maslow_target[DC_Z_AXIS] = z;
-
-    Serial.printf("Targets, Clockwise: %f, %f, %f, %f\n",
-                                maslow_target[DC_TOP_LEFT],
-                                maslow_target[DC_TOP_RIGHT],
-                                maslow_target[DC_BOTTOM_RIGHT],
-                                maslow_target[DC_BOTTOM_LEFT]);
 
     mc_line(maslow_target, pl_data);
 }
@@ -181,6 +200,15 @@ void print_setpoints(){
                                     motor3.getSetpoint(),
                                     motor4.getSetpoint(),
                                     motor5.getSetpoint());
+}
+
+void print_inputs(){
+    Serial.printf("Motor inputs: %g, %g, %g, %g, %g\n",
+                                    motor1.getInput(),
+                                    motor2.getInput(),
+                                    motor3.getInput(),
+                                    motor4.getInput(),
+                                    motor5.getInput());
 }
 
 void update_pid_tunes(double new_p, double new_i, double new_d){
