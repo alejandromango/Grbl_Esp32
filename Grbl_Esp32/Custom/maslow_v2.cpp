@@ -52,6 +52,53 @@ void machine_init(){
         motor4.getInput(),
         motor5.getInput());
     print_setpoints();
+    bool homing_active = true;
+    bool tension_flag = false;
+    int disregulation_counter = 0;
+    // Motor 1 Homing
+    while(homing_active){
+        if(motor1.getRegulationState() & motor4.getRegulationState()){
+            if(!tension_flag){
+                motor1.step(true, true, 1.0/DC_BOTTOM_LEFT_STEPS_PER_MM);
+                motor4.step(true, false, 1.0/DC_BOTTOM_LEFT_STEPS_PER_MM);
+                Serial.printf("Stepping motor 1: %g\n", motor1.getSetpoint());
+                print_setpoints();
+            } else {
+                motor3.step(true, true, 1.0/DC_BOTTOM_LEFT_STEPS_PER_MM);
+                motor4.step(true, true, 1.0/DC_BOTTOM_LEFT_STEPS_PER_MM);
+                motor5.step(true, true, 1.0/DC_BOTTOM_LEFT_STEPS_PER_MM);
+                delayMicroseconds(500000);
+                update_setpoints(
+                    motor1.getSetpoint(),
+                    motor2.getInput(),
+                    motor3.getInput(),
+                    motor4.getInput(),
+                    motor5.getInput());
+                tension_flag = false;
+                Serial.println("Re-Tensioning");
+                print_setpoints();
+            }
+            disregulation_counter = 0;
+        }else{
+            disregulation_counter++;
+            if(disregulation_counter > 20){
+                if(motor3.getRegulationState()){
+                    motor3.step(true, false, 1.0/DC_BOTTOM_LEFT_STEPS_PER_MM);
+                    Serial.println("Giving motor3 slack");
+                }
+                if(motor5.getRegulationState()){
+                    motor5.step(true, false, 1.0/DC_BOTTOM_LEFT_STEPS_PER_MM);
+                    Serial.println("Giving motor5 slack");
+                }
+                tension_flag = true;
+                disregulation_counter = 0;
+                print_setpoints();
+            }
+        }
+        pid_get_state();
+        compute_pid();
+        delayMicroseconds(5000);
+    }
 }
 
 /*
