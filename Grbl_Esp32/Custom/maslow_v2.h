@@ -84,11 +84,11 @@
 #define DC_BOTTOM_RIGHT B_AXIS
 #define DC_Z_AXIS Z_AXIS
 
-#define DC_TOP_LEFT_STEPS_PER_MM 1 //.1mm per step is required resolution
-#define DC_TOP_RIGHT_STEPS_PER_MM 1
-#define DC_BOTTOM_LEFT_STEPS_PER_MM 1
-#define DC_BOTTOM_RIGHT_STEPS_PER_MM 1
-#define DC_Z_AXIS_STEPS_PER_MM 1 //
+#define DC_TOP_LEFT_STEPS_PER_MM 10 //.1mm per step is required resolution
+#define DC_TOP_RIGHT_STEPS_PER_MM 10
+#define DC_BOTTOM_LEFT_STEPS_PER_MM 10
+#define DC_BOTTOM_RIGHT_STEPS_PER_MM 10
+#define DC_Z_AXIS_STEPS_PER_MM 10 //
 
 #define DC_TOP_LEFT_MAX_RATE 100.0 // mm/min
 #define DC_TOP_RIGHT_MAX_RATE 100.0 // mm/min
