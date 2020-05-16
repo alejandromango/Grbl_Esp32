@@ -232,13 +232,15 @@ double MotorUnit::getD(){
  */
 void MotorUnit::computePID(){
     errorDist = setpoint - currentState;
-    if(errorDist<0){
-        output = -65535;
-        inRegulation = true;
-    } else {
-        output = copysign(int(pid->getOutput(currentState,setpoint)), errorDist);
-        inRegulation = (fabs(errorDist) < accuracy);// & (mmPerSecond < 0.1);
-    }
+    // if(errorDist<0){
+    //     output = -65535;
+    //     inRegulation = true;
+    // } else {
+    //     output = copysign(int(pid->getOutput(currentState,setpoint)), errorDist);
+    //     inRegulation = (fabs(errorDist) < accuracy);// & (mmPerSecond < 0.1);
+    // }
+    output = copysign(int(pid->getOutput(currentState,setpoint)), errorDist);
+    inRegulation = (fabs(errorDist) < accuracy);// & (mmPerSecond < 0.1);
 
     if(!disabled){
         motor->runAtPID(output);

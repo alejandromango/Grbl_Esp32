@@ -38,7 +38,8 @@
 #ifdef N_AXIS
     #undef N_AXIS
 #endif
-#define N_AXIS 5
+#define N_AXIS 3
+#define N_MOTORS 5
 
 #define NUM_TLC59711 1
 #define TLC_DATA   16
@@ -117,7 +118,7 @@
 #define DEFAULT_B_MAX_RATE DC_BOTTOM_RIGHT_MAX_RATE // mm/min
 
 #define USE_PIDCONTROL
-#define USE_KINEMATICS
+// #define USE_KINEMATICS
 #define USE_FWD_KINEMATIC
 #define USE_MACHINE_INIT
 // ================ Custom function Prototypes ======================
@@ -148,6 +149,8 @@
     void update_pid_tunes(double new_p,
                             double new_i,
                             double new_d);
+    double calculate_step(bool step, bool direction, double mm_per_step);
+    void step_inverse_kinematics(double* target, double* maslow_target);
 
     void update_control_mode(pid_mode new_mode);
 

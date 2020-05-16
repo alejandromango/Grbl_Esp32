@@ -416,11 +416,10 @@ uint8_t plan_buffer_line(float* target, plan_line_data_t* pl_data) {
         // Finish up by recalculating the plan with the new block.
         planner_recalculate();
     }
-    Serial.printf("Planned Position, Clockwise: %f, %f, %f, %f\n",
-                                target[DC_TOP_LEFT],
-                                target[DC_TOP_RIGHT],
-                                target[DC_BOTTOM_RIGHT],
-                                target[DC_BOTTOM_LEFT]);
+    Serial.printf("Planned Position: %f, %f, %f\n",
+                                target[X_AXIS],
+                                target[Y_AXIS],
+                                target[Z_AXIS]);
     return (PLAN_OK);
 }
 

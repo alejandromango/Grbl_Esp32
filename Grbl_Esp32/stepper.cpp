@@ -260,7 +260,7 @@ void IRAM_ATTR onStepperDriverTimer(void *para) {  // ISR It is time to take a s
         stepper_blocked_counter++;
         TIMERG0.hw_timer[STEP_TIMER_INDEX].config.alarm_en = TIMER_ALARM_EN;
         if(stepper_blocked_counter > 100000){
-            // print_regulation();
+            print_setpoints();
             stepper_blocked_counter = 0;
         }
         return; // Bail and try again later if the last step is not complete

@@ -122,10 +122,8 @@ void loop() {
     plan_reset(); // Clear block buffer and planner variables
     st_reset(); // Clear stepper subsystem variables
     // Manually assign starting positions
-    sys_position[DC_TOP_LEFT] = 231.8 * DC_TOP_LEFT_STEPS_PER_MM;
-    sys_position[DC_TOP_RIGHT] = 174.6 * DC_TOP_RIGHT_STEPS_PER_MM;
-    sys_position[DC_BOTTOM_LEFT] = 276.2 * DC_BOTTOM_LEFT_STEPS_PER_MM;
-    sys_position[DC_BOTTOM_RIGHT] = 228.6 * DC_BOTTOM_RIGHT_STEPS_PER_MM;
+    sys_position[X_AXIS] = 158 * DC_TOP_LEFT_STEPS_PER_MM;
+    sys_position[Y_AXIS] = 158 * DC_TOP_RIGHT_STEPS_PER_MM;
     sys_position[Z_AXIS] = 0 * DC_Z_AXIS_STEPS_PER_MM;
     // Sync cleared gcode and planner positions to current system position.
     plan_sync_position();

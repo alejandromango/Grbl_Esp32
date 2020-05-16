@@ -22,6 +22,13 @@ static float bottom_dist = 285.9;
 static float left_dist = 349.4;
 static float right_dist = 349.4;
 
+static float top_left_offset = 0;
+static float top_right_offset = 0;
+static float bottom_left_offset = 0;
+static float top_right_offset = 0;
+static float z_offset = 0;
+
+
 
 void machine_init(){
     tlc.begin();
@@ -80,6 +87,26 @@ void inverse_kinematics(float *target, plan_line_data_t *pl_data, float *positio
 }
 
 /*
+ Apply inverse kinematics for maslow CNC.
+
+*/
+void step_inverse_kinematics(double *target, double *maslow_target) {
+    //static float last_angle = 0;
+    //static float last_radius = 0;
+    double x, y, z;                  // distances in each cartesian axis
+    x = target[X_AXIS];
+    y = target[Y_AXIS];
+    z = target[Z_AXIS];
+    // MASLOWTODO: Drop equations for each of the cable lengths here.
+    maslow_target[DC_TOP_LEFT] = sqrt(pow(x + X_TL_OFFSET, 2) + pow(y + Y_TL_OFFSET, 2));
+    maslow_target[DC_TOP_RIGHT] = sqrt(pow(x_max - x + X_TR_OFFSET, 2) + pow(y + Y_TR_OFFSET, 2));
+    maslow_target[DC_BOTTOM_LEFT] = sqrt(pow(x + X_BL_OFFSET, 2) + pow(y_max - y + Y_BL_OFFSET, 2));
+    maslow_target[DC_BOTTOM_RIGHT] = sqrt(pow(x_max - x + X_BR_OFFSET, 2) + pow(y - y_max + Y_BR_OFFSET, 2));
+    maslow_target[DC_Z_AXIS] = z;
+
+}
+
+/*
   user_defined_homing() is called at the begining of the normal Grbl_ESP32 homing
   sequence.  If user_defined_homing() returns false, the rest of normal Grbl_ESP32
   homing is skipped if it returns false, other normal homing continues.  For
@@ -131,14 +158,52 @@ void kinematics_post_homing()
 {
 }
 
+// Because the axis/actuator ratio is not 1-1 the default grbl planner will not
+// properly plan movements with maslow kinematics applied. In order to avoid
+// re-inventing the planner wheel, we do kinematics here every time a step is
+// requested. The stepmask will tell us how to step in x, y, and z. We keep
+// track of what that means for each of the 5 motors.
 void pid_step(uint8_t step_mask, uint8_t dir_mask){
-    motor1.step(step_mask & (1<<DC_BOTTOM_LEFT), dir_mask & (1<<DC_BOTTOM_LEFT), 1.0/DC_BOTTOM_LEFT_STEPS_PER_MM);
-    motor2.step(step_mask & (1<<DC_Z_AXIS), dir_mask & (1<<DC_Z_AXIS), 1.0/DC_Z_AXIS_STEPS_PER_MM);
-    motor3.step(step_mask & (1<<DC_TOP_LEFT), dir_mask & (1<<DC_TOP_LEFT), 1.0/DC_TOP_LEFT_STEPS_PER_MM);
-    motor4.step(step_mask & (1<<DC_TOP_RIGHT), dir_mask & (1<<DC_TOP_RIGHT), 1.0/DC_TOP_RIGHT_STEPS_PER_MM);
-    motor5.step(step_mask & (1<<DC_BOTTOM_RIGHT), dir_mask & (1<<DC_BOTTOM_RIGHT), 1.0/DC_BOTTOM_RIGHT_STEPS_PER_MM);
+    double x_step, y_step, z_step;      // Step Sizes in each cartesian axis
+    float mm_position[N_AXIS];          // starting location in each cartesian axis
+    double mm_target[N_AXIS];          // target location in each cartesian axis
+    double maslow_target[N_MOTORS];     // target location in maslow cable lengths
+    int32_t current_position[N_AXIS];   // Copy current state of the system position variable
+    memcpy(current_position, sys_position, sizeof(sys_position));
+    system_convert_array_steps_to_mpos(mm_position, current_position);
+
+    Serial.println("Before step");
     print_setpoints();
 
+    x_step = calculate_step(step_mask & (1<<X_AXIS), dir_mask & (1<<X_AXIS), 1.0/DEFAULT_X_STEPS_PER_MM);
+    y_step = calculate_step(step_mask & (1<<Y_AXIS), dir_mask & (1<<Y_AXIS), 1.0/DEFAULT_Y_STEPS_PER_MM);
+    z_step = calculate_step(step_mask & (1<<Z_AXIS), dir_mask & (1<<Z_AXIS), 1.0/DEFAULT_Z_STEPS_PER_MM);
+
+    mm_target[X_AXIS] = mm_position[X_AXIS] + x_step;
+    mm_target[Y_AXIS] = mm_position[Y_AXIS] + y_step;
+    mm_target[Z_AXIS] = mm_position[Z_AXIS] + z_step;
+
+    step_inverse_kinematics(mm_target, maslow_target);
+    // MASLOWTODO: Drop equations for each of the cable lengths here.
+    update_setpoints(maslow_target[DC_BOTTOM_LEFT],
+                     maslow_target[DC_Z_AXIS],
+                     maslow_target[DC_TOP_LEFT],
+                     maslow_target[DC_TOP_RIGHT],
+                     maslow_target[DC_BOTTOM_RIGHT]);
+    Serial.println("After step");
+    print_setpoints();
+}
+
+double calculate_step(bool step, bool direction, double mm_per_step){
+    double step_size = 0;
+    if(step){
+        if(!direction){
+            step_size += mm_per_step;
+        }else{
+            step_size -= mm_per_step;
+        }
+    }
+    return step_size;
 }
 
 void pid_get_state(){
