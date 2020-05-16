@@ -25,7 +25,7 @@ static float right_dist = 349.4;
 static float top_left_offset = 0;
 static float top_right_offset = 0;
 static float bottom_left_offset = 0;
-static float top_right_offset = 0;
+static float bottom_right_offset = 0;
 static float z_offset = 0;
 
 
@@ -59,6 +59,25 @@ void machine_init(){
         motor4.getInput(),
         motor5.getInput());
     print_setpoints();
+}
+
+void machine_sync(){
+    float mm_position[N_AXIS];          // starting location in each cartesian axis
+    double dbl_mm_position[N_AXIS];
+    double maslow_position[N_MOTORS];     // target location in maslow cable lengths
+    int32_t current_position[N_AXIS];   // Copy current state of the system position variable
+    memcpy(current_position, sys_position, sizeof(sys_position));
+    system_convert_array_steps_to_mpos(mm_position, current_position);
+    dbl_mm_position[X_AXIS] = mm_position[X_AXIS];
+    dbl_mm_position[Y_AXIS] = mm_position[Y_AXIS];
+    dbl_mm_position[Z_AXIS] = mm_position[Z_AXIS];
+    step_inverse_kinematics(dbl_mm_position, maslow_position);
+    bottom_left_offset = motor1.getSetpoint() - maslow_position[DC_BOTTOM_LEFT];
+    z_offset = motor2.getSetpoint() - maslow_position[DC_Z_AXIS];
+    top_left_offset = motor3.getSetpoint() - maslow_position[DC_TOP_LEFT];
+    top_right_offset = motor4.getSetpoint() - maslow_position[DC_TOP_RIGHT];
+    bottom_right_offset = motor5.getSetpoint() - maslow_position[DC_BOTTOM_RIGHT];
+
 }
 
 /*
@@ -98,11 +117,11 @@ void step_inverse_kinematics(double *target, double *maslow_target) {
     y = target[Y_AXIS];
     z = target[Z_AXIS];
     // MASLOWTODO: Drop equations for each of the cable lengths here.
-    maslow_target[DC_TOP_LEFT] = sqrt(pow(x + X_TL_OFFSET, 2) + pow(y + Y_TL_OFFSET, 2));
-    maslow_target[DC_TOP_RIGHT] = sqrt(pow(x_max - x + X_TR_OFFSET, 2) + pow(y + Y_TR_OFFSET, 2));
-    maslow_target[DC_BOTTOM_LEFT] = sqrt(pow(x + X_BL_OFFSET, 2) + pow(y_max - y + Y_BL_OFFSET, 2));
-    maslow_target[DC_BOTTOM_RIGHT] = sqrt(pow(x_max - x + X_BR_OFFSET, 2) + pow(y - y_max + Y_BR_OFFSET, 2));
-    maslow_target[DC_Z_AXIS] = z;
+    maslow_target[DC_TOP_LEFT] = sqrt(pow(x + X_TL_OFFSET, 2) + pow(y + Y_TL_OFFSET, 2)) + top_left_offset;
+    maslow_target[DC_TOP_RIGHT] = sqrt(pow(x_max - x + X_TR_OFFSET, 2) + pow(y + Y_TR_OFFSET, 2)) + top_right_offset;
+    maslow_target[DC_BOTTOM_LEFT] = sqrt(pow(x + X_BL_OFFSET, 2) + pow(y_max - y + Y_BL_OFFSET, 2)) + bottom_left_offset;
+    maslow_target[DC_BOTTOM_RIGHT] = sqrt(pow(x_max - x + X_BR_OFFSET, 2) + pow(y - y_max + Y_BR_OFFSET, 2)) + bottom_right_offset;
+    maslow_target[DC_Z_AXIS] = z + z_offset;
 
 }
 

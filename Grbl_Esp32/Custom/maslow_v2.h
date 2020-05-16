@@ -151,6 +151,7 @@
                             double new_d);
     double calculate_step(bool step, bool direction, double mm_per_step);
     void step_inverse_kinematics(double* target, double* maslow_target);
+    void machine_sync();
 
     void update_control_mode(pid_mode new_mode);
 
