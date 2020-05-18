@@ -122,12 +122,13 @@ void loop() {
     plan_reset(); // Clear block buffer and planner variables
     st_reset(); // Clear stepper subsystem variables
     // Manually assign starting positions
-    sys_position[X_AXIS] = 158 * DC_TOP_LEFT_STEPS_PER_MM;
-    sys_position[Y_AXIS] = 158 * DC_TOP_RIGHT_STEPS_PER_MM;
+    sys_position[X_AXIS] = 108 * DC_TOP_LEFT_STEPS_PER_MM;
+    sys_position[Y_AXIS] = 140 * DC_TOP_RIGHT_STEPS_PER_MM;
     sys_position[Z_AXIS] = 0 * DC_Z_AXIS_STEPS_PER_MM;
     // Sync cleared gcode and planner positions to current system position.
     plan_sync_position();
     gc_sync_position();
+    machine_sync();
     // put your main code here, to run repeatedly:
     report_init_message(CLIENT_ALL);
     print_inputs();

@@ -77,6 +77,12 @@ void machine_sync(){
     top_left_offset = motor3.getSetpoint() - maslow_position[DC_TOP_LEFT];
     top_right_offset = motor4.getSetpoint() - maslow_position[DC_TOP_RIGHT];
     bottom_right_offset = motor5.getSetpoint() - maslow_position[DC_BOTTOM_RIGHT];
+    Serial.printf("Offsets: BL - %g, Z - %g, TL - %g, TR - %g, BR - %g\n",
+                                    bottom_left_offset,
+                                    z_offset,
+                                    top_left_offset,
+                                    top_right_offset,
+                                    bottom_right_offset);
 
 }
 
