@@ -34,24 +34,24 @@ void machine_init(){
     tlc.begin();
     tlc.write();
     pid_get_state();
-    print_setpoints();
-    update_setpoints(
-        motor1.getInput(),
-        motor2.getInput(),
-        motor3.getInput(),
-        motor4.getInput(),
-        motor5.getInput());
-    print_setpoints();
-    motor1.motor->fullBackward();
-    motor2.motor->fullBackward();
-    motor3.motor->fullBackward();
-    motor4.motor->fullBackward();
-    motor5.motor->fullBackward();
-    int i;
-    for(i = 0; i<200 ; i++){
-        delayMicroseconds(50000);
-        pid_get_state();
-    }
+    // print_setpoints();
+    // update_setpoints(
+    //     motor1.getInput(),
+    //     motor2.getInput(),
+    //     motor3.getInput(),
+    //     motor4.getInput(),
+    //     motor5.getInput());
+    // print_setpoints();
+    // motor1.motor->fullBackward();
+    // motor2.motor->fullBackward();
+    // motor3.motor->fullBackward();
+    // motor4.motor->fullBackward();
+    // motor5.motor->fullBackward();
+    // int i;
+    // for(i = 0; i<200 ; i++){
+    //     delayMicroseconds(50000);
+    //     pid_get_state();
+    // }
     update_setpoints(
         motor1.getInput(),
         motor2.getInput(),
@@ -197,8 +197,8 @@ void pid_step(uint8_t step_mask, uint8_t dir_mask){
     memcpy(current_position, sys_position, sizeof(sys_position));
     system_convert_array_steps_to_mpos(mm_position, current_position);
 
-    Serial.println("Before step");
-    print_setpoints();
+    // Serial.println("Before step");
+    // print_setpoints();
 
     x_step = calculate_step(step_mask & (1<<X_AXIS), dir_mask & (1<<X_AXIS), 1.0/DEFAULT_X_STEPS_PER_MM);
     y_step = calculate_step(step_mask & (1<<Y_AXIS), dir_mask & (1<<Y_AXIS), 1.0/DEFAULT_Y_STEPS_PER_MM);
@@ -210,13 +210,13 @@ void pid_step(uint8_t step_mask, uint8_t dir_mask){
 
     step_inverse_kinematics(mm_target, maslow_target);
     // MASLOWTODO: Drop equations for each of the cable lengths here.
-    update_setpoints(maslow_target[DC_BOTTOM_LEFT],
-                     maslow_target[DC_Z_AXIS],
+    update_setpoints(motor1.getInput(),//maslow_target[DC_BOTTOM_LEFT],
+                     motor2.getInput(),//maslow_target[DC_Z_AXIS],
                      maslow_target[DC_TOP_LEFT],
-                     maslow_target[DC_TOP_RIGHT],
-                     maslow_target[DC_BOTTOM_RIGHT]);
-    Serial.println("After step");
-    print_setpoints();
+                     motor4.getInput(),//maslow_target[DC_TOP_RIGHT],
+                     motor5.getInput());//maslow_target[DC_BOTTOM_RIGHT]);
+    // Serial.println("After step");
+    // print_setpoints();
 }
 
 double calculate_step(bool step, bool direction, double mm_per_step){

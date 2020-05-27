@@ -259,8 +259,9 @@ void IRAM_ATTR onStepperDriverTimer(void *para) {  // ISR It is time to take a s
     if(!pid_ready()){
         stepper_blocked_counter++;
         TIMERG0.hw_timer[STEP_TIMER_INDEX].config.alarm_en = TIMER_ALARM_EN;
-        if(stepper_blocked_counter > 100000){
+        if(stepper_blocked_counter > 10000){
             // print_setpoints();
+            // Serial.println("Blocked stepper");
             stepper_blocked_counter = 0;
         }
         return; // Bail and try again later if the last step is not complete

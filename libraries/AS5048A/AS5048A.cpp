@@ -47,12 +47,13 @@ void AS5048A::init(){
   * • Fast mode: clock frequency from 0 to 400 kHz (slave mode)
   * • High speed: 0 to 3.4 MHz clock frequency (slave mode)
   */
-  settings = SPISettings(1000000, MSBFIRST, SPI_MODE1);
+  settings = SPISettings(10000000, MSBFIRST, SPI_MODE1);
   SPI2 = SPIClass(HSPI);
  // initialization of the Slave Select pin if the LOW slave interacts with the master if the HIGH slave ignores the signals from the master
   pinMode(_cs, OUTPUT);
   //SPI has an internal SPI-device counter, it is possible to call "begin()" from different devices
   SPI2.begin(); //void begin(int8_t sck=-1, int8_t miso=-1, int8_t mosi=-1, int8_t ss=-1);
+  delay(10);
 }
 
 /**
