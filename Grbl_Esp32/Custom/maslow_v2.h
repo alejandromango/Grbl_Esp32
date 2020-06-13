@@ -41,15 +41,15 @@
 #define N_AXIS 5
 
 #define NUM_TLC59711 1
-#define TLC_DATA   5
+#define TLC_DATA   16
 #define TLC_CLOCK  21
 
 #define RSENSE 10000
-#define MOTOR_1_ADC ADC1_GPIO33_CHANNEL
+#define MOTOR_1_ADC ADC1_GPIO32_CHANNEL
 #define MOTOR_1_FORWARD 1
 #define MOTOR_1_BACKWARD 0
 #define MOTOR_1_CS 17
-#define MOTOR_2_ADC ADC1_GPIO34_CHANNEL
+#define MOTOR_2_ADC ADC1_GPIO39_CHANNEL
 #define MOTOR_2_FORWARD 3
 #define MOTOR_2_BACKWARD 2
 #define MOTOR_2_CS 3
@@ -57,14 +57,14 @@
 #define MOTOR_3_FORWARD 5
 #define MOTOR_3_BACKWARD 4
 #define MOTOR_3_CS 22
-#define MOTOR_4_ADC ADC1_GPIO35_CHANNEL
+#define MOTOR_4_ADC ADC1_GPIO34_CHANNEL
 #define MOTOR_4_FORWARD 7
 #define MOTOR_4_BACKWARD 6
-#define MOTOR_4_CS 25
-#define MOTOR_5_ADC ADC1_GPIO32_CHANNEL
+#define MOTOR_4_CS 33
+#define MOTOR_5_ADC ADC1_GPIO35_CHANNEL
 #define MOTOR_5_FORWARD 9
 #define MOTOR_5_BACKWARD 8
-#define MOTOR_5_CS 13
+#define MOTOR_5_CS 25
 
 
 // Set the distance of the point where the cord connects to the sled to the bit

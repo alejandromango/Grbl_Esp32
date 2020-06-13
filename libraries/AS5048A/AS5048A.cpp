@@ -48,10 +48,11 @@ void AS5048A::init(){
   * • High speed: 0 to 3.4 MHz clock frequency (slave mode)
   */
   settings = SPISettings(1000000, MSBFIRST, SPI_MODE1);
+  SPI2 = SPIClass(HSPI);
  // initialization of the Slave Select pin if the LOW slave interacts with the master if the HIGH slave ignores the signals from the master
   pinMode(_cs, OUTPUT);
   //SPI has an internal SPI-device counter, it is possible to call "begin()" from different devices
-  SPI.begin(); //void begin(int8_t sck=-1, int8_t miso=-1, int8_t mosi=-1, int8_t ss=-1);
+  SPI2.begin(); //void begin(int8_t sck=-1, int8_t miso=-1, int8_t mosi=-1, int8_t ss=-1);
 }
 
 /**
@@ -59,7 +60,7 @@ void AS5048A::init(){
  * SPI has an internal SPI-device counter, for each init()-call the close() function must be called exactly 1 time
  */
 void AS5048A::close(){
-  SPI.end();
+  SPI2.end();
 }
 
 /**
@@ -410,12 +411,12 @@ word AS5048A::read(word RegisterAddress, bool MeanValueMedian){
   command |= ((word)spiCalcEvenParity(command)<<15);
 
   //SPI - begin transaction
-  SPI.beginTransaction(settings);
+  SPI2.beginTransaction(settings);
 
   digitalWrite(_cs, LOW);
-  SPI.transfer16(command);
+  SPI2.transfer16(command);
   digitalWrite(_cs, HIGH);
-  SPI.endTransaction();
+  SPI2.endTransaction();
 
   #ifdef AS5048A_DEBUG
     Serial.print("Read (0x");
@@ -429,7 +430,7 @@ word AS5048A::read(word RegisterAddress, bool MeanValueMedian){
 
     for ( byte i = 0; i < 16; i++){
       digitalWrite(_cs, LOW);
-      array_data[i] = SPI.transfer16(command) & ~0xC000;
+      array_data[i] = SPI2.transfer16(command) & ~0xC000;
       digitalWrite(_cs, HIGH);
       //Serial.println(array_data[i], BIN);
     }
@@ -437,14 +438,14 @@ word AS5048A::read(word RegisterAddress, bool MeanValueMedian){
     AS5048A::quickSort(array_data, 0, 15);
     readdata = ( array_data[8]  + array_data[9]  ) / 2 ;
 
-    SPI.endTransaction();
+    SPI2.endTransaction();
     //SPI - end transaction
 
     //Return the data, stripping the parity and error bits
     return readdata;
   }else{
     digitalWrite(_cs, LOW);
-    readdata = SPI.transfer16(command);
+    readdata = SPI2.transfer16(command);
     digitalWrite(_cs, HIGH);
 
     #ifdef AS5048A_DEBUG
@@ -464,7 +465,7 @@ word AS5048A::read(word RegisterAddress, bool MeanValueMedian){
       _errorFlag = false;
     }
 
-    SPI.endTransaction();
+    SPI2.endTransaction();
     //SPI - end transaction
 
     //Return the data, stripping the parity and error bits
@@ -502,11 +503,11 @@ word AS5048A::write(word RegisterAddress, word WriteData) {
 #endif
 
   //SPI - begin transaction
-  SPI.beginTransaction(settings);
+  SPI2.beginTransaction(settings);
 
   //Start the write command with the target address
   digitalWrite(_cs, LOW);
-  SPI.transfer16(command);
+  SPI2.transfer16(command);
   digitalWrite(_cs, HIGH);
 
 #ifdef AS5048A_DEBUG
@@ -516,17 +517,17 @@ word AS5048A::write(word RegisterAddress, word WriteData) {
 
   //Now send the data packet
   digitalWrite(_cs, LOW);
-  SPI.transfer16(dataToSend);
+  SPI2.transfer16(dataToSend);
   digitalWrite(_cs, HIGH);
 
   //Send a NOP to get the new data in the register
   digitalWrite(_cs, LOW);
-  dataToSend = SPI.transfer16(AS5048A_NOP);
+  dataToSend = SPI2.transfer16(AS5048A_NOP);
   digitalWrite(_cs, HIGH);
-  SPI.endTransaction();
+  SPI2.endTransaction();
 
   //SPI - end transaction
-  SPI.endTransaction();
+  SPI2.endTransaction();
 
   //Return the data, stripping the parity and error bits
   return dataToSend & ~0xC000;

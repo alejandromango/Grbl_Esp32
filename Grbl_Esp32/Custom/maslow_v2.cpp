@@ -2,11 +2,11 @@
 esp_adc_cal_characteristics_t *adc_1_characterisitics = (esp_adc_cal_characteristics_t*) calloc(1, sizeof(esp_adc_cal_characteristics_t));
 esp_adc_cal_value_t val_type = esp_adc_cal_characterize(ADC_UNIT_1, ADC_ATTEN_DB_2_5, ADC_WIDTH_BIT_12, 1100, adc_1_characterisitics);
 esp_err_t config_err_0 = adc1_config_width(ADC_WIDTH_BIT_12);
-esp_err_t config_err_1 = adc1_config_channel_atten(ADC1_GPIO33_CHANNEL, ADC_ATTEN_DB_2_5);
-esp_err_t config_err_2 = adc1_config_channel_atten(ADC1_GPIO34_CHANNEL, ADC_ATTEN_DB_2_5);
-esp_err_t config_err_3 = adc1_config_channel_atten(ADC1_GPIO36_CHANNEL, ADC_ATTEN_DB_2_5);
-esp_err_t config_err_4 = adc1_config_channel_atten(ADC1_GPIO32_CHANNEL, ADC_ATTEN_DB_2_5);
-esp_err_t config_err_5 = adc1_config_channel_atten(ADC1_GPIO35_CHANNEL, ADC_ATTEN_DB_2_5);
+esp_err_t config_err_1 = adc1_config_channel_atten(MOTOR_1_ADC, ADC_ATTEN_DB_2_5);
+esp_err_t config_err_2 = adc1_config_channel_atten(MOTOR_2_ADC, ADC_ATTEN_DB_2_5);
+esp_err_t config_err_3 = adc1_config_channel_atten(MOTOR_3_ADC, ADC_ATTEN_DB_2_5);
+esp_err_t config_err_4 = adc1_config_channel_atten(MOTOR_4_ADC, ADC_ATTEN_DB_2_5);
+esp_err_t config_err_5 = adc1_config_channel_atten(MOTOR_5_ADC, ADC_ATTEN_DB_2_5);
 TLC59711 tlc(NUM_TLC59711, TLC_CLOCK, TLC_DATA); // MASLOW_TODO: Will this get garbage collected?
 MotorUnit motor1(&tlc, MOTOR_1_FORWARD, MOTOR_1_BACKWARD, MOTOR_1_ADC, RSENSE, adc_1_characterisitics, MOTOR_1_CS, DC_TOP_LEFT_MM_PER_REV, 1);
 MotorUnit motor2(&tlc, MOTOR_2_FORWARD, MOTOR_2_BACKWARD, MOTOR_2_ADC, RSENSE, adc_1_characterisitics, MOTOR_2_CS, DC_TOP_RIGHT_MM_PER_REV, 1);

@@ -9,6 +9,7 @@
 //#include <stdlib.h>
 
 class AS5048A{
+  SPIClass SPI2;
 
   bool _errorFlag;
   byte _cs;
